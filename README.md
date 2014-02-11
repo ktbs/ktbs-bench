@@ -1,4 +1,0 @@
-StoreBench
-==========
-
-Benchmarking RDF stores.
