@@ -1,0 +1,48 @@
+/Users/vincent/projets/pro/liris/ktbs_bench/bin/python /Users/vincent/projets/pro/liris/ktbs_bench/storebench.py
+file: 500.n3.bz2    DB: SQLite  config: /tmp/t2.db
+[parse] usr: 0.332843   sys: 0.00546    usr+sys: 0.338303   real: 0.339243888855
+[commit] usr: 0.000305  sys: 0.001923   usr+sys: 0.002228   real: 0.0131778717041
+
+file: 1000.n3.bz2   DB: SQLite  config: /tmp/t2.db
+[parse] usr: 0.606214   sys: 0.004583   usr+sys: 0.610797   real: 0.613773107529
+[commit] usr: 0.000441  sys: 0.001822   usr+sys: 0.002263   real: 0.012552022934
+
+file: 2000.n3.bz2   DB: SQLite  config: /tmp/t2.db
+[parse] usr: 0.941647   sys: 0.006547   usr+sys: 0.948194   real: 0.952131986618
+[commit] usr: 0.000707  sys: 0.002504   usr+sys: 0.003211   real: 0.0127239227295
+
+file: 500.n3.bz2    DB: SQLAlchemy  config: sqlite:////tmp/t.db
+[parse] usr: 1.676692   sys: 0.965054   usr+sys: 2.641746   real: 11.5116038322
+[commit] usr: 7.99999999979e-06 sys: 0.0    usr+sys: 7.99999999934e-06  real: 8.10623168945e-06
+
+file: 1000.n3.bz2   DB: SQLAlchemy  config: sqlite:////tmp/t.db
+[parse] usr: 3.076246   sys: 1.432408   usr+sys: 4.508654   real: 26.5256288052
+[commit] usr: 1.19999999999e-05 sys: 2.00000000028e-06  usr+sys: 1.40000000002e-05  real: 1.19209289551e-05
+
+file: 2000.n3.bz2   DB: SQLAlchemy  config: sqlite:////tmp/t.db
+[parse] usr: 5.216969   sys: 2.49481    usr+sys: 7.711779   real: 40.6641499996
+[commit] usr: 9.99999999962e-06 sys: 2.00000000028e-06  usr+sys: 1.19999999981e-05  real: 1.00135803223e-05
+
+file: 500.n3.bz2    DB: PostgreSQL  config: user=vincent dbname=newtest_pg
+[parse] usr: 0.356702   sys: 0.015488   usr+sys: 0.37219    real: 0.529113054276
+[commit] usr: 4.79999999996e-05 sys: 2.20000000004e-05  usr+sys: 7.00000000009e-05  real: 0.00551605224609
+
+file: 1000.n3.bz2   DB: PostgreSQL  config: user=vincent dbname=newtest_pg
+[parse] usr: 0.702  sys: 0.03392    usr+sys: 0.73592    real: 1.17496204376
+[commit] usr: 6.00000000013e-05 sys: 2.90000000005e-05  usr+sys: 8.90000000027e-05  real: 0.0103878974915
+
+file: 2000.n3.bz2   DB: PostgreSQL  config: user=vincent dbname=newtest_pg
+[parse] usr: 1.116947   sys: 0.0563 usr+sys: 1.173247   real: 1.88813710213
+[commit] usr: 6.50000000011e-05 sys: 3.2e-05    usr+sys: 9.70000000002e-05  real: 0.058709859848
+
+file: 500.n3.bz2    DB: SQLAlchemy  config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 0.836236   sys: 0.078141   usr+sys: 0.914377   real: 1.7675280571
+[commit] usr: 7.00000000009e-06 sys: 0.0    usr+sys: 7.00000000009e-06  real: 8.10623168945e-06
+
+file: 1000.n3.bz2   DB: SQLAlchemy  config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 1.544877   sys: 0.139042   usr+sys: 1.683919   real: 2.87683820724
+[commit] usr: 8.00000000112e-06 sys: 0.0    usr+sys: 8.00000000112e-06  real: 8.10623168945e-06
+
+file: 2000.n3.bz2   DB: SQLAlchemy  config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 2.264411   sys: 0.203175   usr+sys: 2.467586   real: 4.08051991463
+[commit] usr: 8.00000000112e-06 sys: 0.0    usr+sys: 8.00000000112e-06  real: 9.05990600586e-06

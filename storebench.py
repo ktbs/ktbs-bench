@@ -4,9 +4,9 @@ from os import listdir
 from bz2 import BZ2File
 import rdflib as r
 import psycopg2 as pg
-import time
 import re
 import logging
+import utils
 
 
 class BenchStore:
@@ -48,23 +48,32 @@ def bench(stores, datadir, outfile=None):
         files = filter(lambda f: f.endswith('.n3.bz2'), listdir(datadir))
         files.sort(key=natural_keys)
 
-        for fcomp in files[:4]:
+        for fcomp in files[:3]:
             f = BZ2File(datadir + fcomp)  # decompress file, returns a file object
 
             # Create the database
             store.create()
 
             # Setting the graph with database info
-            g = r.ConjunctiveGraph(store.name)  # TODO Graph plutot que Conjunctive
+            g = r.Graph(store.name, identifier=r.URIRef('http://localhost/test_graph'))
             g.open(store.config, create=False)
 
-            # Benchmarking: parse and add the data to the graph
-            tstart = time.clock()
+            # Benchmarking: parsin and adding the data to the graph
+            tparse_start = utils.timeit()
             g.parse(source=f, format='n3')
+            tparse_end = utils.timeit()
+            tparse = utils.list_sub(tparse_end, tparse_start)
+
+            tcommit_start = utils.timeit()
             g.commit()
-            print("file: %s\tDB: %s\tconfig: %s\ttime: %ss" % (fcomp, store.name,
-                                                               store.config,
-                                                               time.clock() - tstart))
+            tcommit_end = utils.timeit()
+            tcommit = utils.list_sub(tcommit_end, tcommit_start)
+
+            print("file: %s\tDB: %s\tconfig: %s" % (fcomp, store.name, store.config))
+            print("[parse] usr: %s\tsys: %s\tusr+sys: %s\treal: %s" %
+                  (tparse[0], tparse[1], tparse[2], tparse[3]))
+            print("[commit] usr: %s\tsys: %s\tusr+sys: %s\treal: %s\n" %
+                  (tcommit[0], tcommit[1], tcommit[2], tcommit[3]))
 
             # Destroy the tables
             store.destroy(g)
@@ -104,9 +113,8 @@ if __name__ == '__main__':
     sqla_sqlite = BenchStore('SQLAlchemy', 'sqlite:////tmp/t.db')
     postgres = BenchStore('PostgreSQL', 'user=vincent dbname=newtest_pg', pg_create, ["newtest_pg", "vincent"])
     slite = BenchStore('SQLite', '/tmp/t2.db')
-    stores = [postgres, sqla_pg]
+    stores = [slite, sqla_sqlite, postgres, sqla_pg]
 
     datadir = 'data/'
 
     bench(stores, datadir)
-
