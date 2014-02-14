@@ -1,0 +1,80 @@
+WARNING: Attempting to work in a virtualenv. If you encounter problems, please install IPython inside the virtualenv.
+file: 500.n3.bz2	DB: SQLite	config: /tmp/t2.db
+[parse] usr: 0.328315	sys: 0.005423	usr+sys: 0.333738	real: 0.422599077225
+[commit] usr: 0.000322	sys: 0.002051	usr+sys: 0.002373	real: 0.00673699378967
+
+file: 1000.n3.bz2	DB: SQLite	config: /tmp/t2.db
+[parse] usr: 0.598828	sys: 0.003426	usr+sys: 0.602254	real: 0.629153013229
+[commit] usr: 0.000675	sys: 0.003164	usr+sys: 0.003839	real: 0.0111029148102
+
+file: 4000.n3.bz2	DB: SQLite	config: /tmp/t2.db
+[parse] usr: 1.884576	sys: 0.01159	usr+sys: 1.896166	real: 1.91143107414
+[commit] usr: 0.001429	sys: 0.007543	usr+sys: 0.008972	real: 0.0271270275116
+
+file: 32000.n3.bz2	DB: SQLite	config: /tmp/t2.db
+[parse] usr: 15.492184	sys: 0.195285	usr+sys: 15.687469	real: 16.3975307941
+[commit] usr: 0.001718	sys: 0.05294	usr+sys: 0.054658	real: 0.288182973862
+
+file: 500.n3.bz2	DB: SQLAlchemy	config: sqlite:////tmp/t.db
+[parse] usr: 1.698111	sys: 0.798209	usr+sys: 2.49632	real: 8.81302690506
+[commit] usr: 1.19999999981e-05	sys: 1.99999999984e-06	usr+sys: 1.40000000002e-05	real: 1.19209289551e-05
+
+file: 1000.n3.bz2	DB: SQLAlchemy	config: sqlite:////tmp/t.db
+[parse] usr: 3.167926	sys: 1.459256	usr+sys: 4.627182	real: 22.6444571018
+[commit] usr: 8.99999999859e-06	sys: 9.99999999696e-07	usr+sys: 9.99999999962e-06	real: 9.05990600586e-06
+
+file: 4000.n3.bz2	DB: SQLAlchemy	config: sqlite:////tmp/t.db
+[parse] usr: 10.384611	sys: 5.181976	usr+sys: 15.566587	real: 82.6567361355
+[commit] usr: 1.40000000002e-05	sys: 1.00000000103e-06	usr+sys: 1.50000000048e-05	real: 1.21593475342e-05
+
+file: 32000.n3.bz2	DB: SQLAlchemy	config: sqlite:////tmp/t.db
+[parse] usr: 84.963137	sys: 43.89482	usr+sys: 128.857957	real: 1784.04895091
+[commit] usr: 1.19999999981e-05	sys: 1.00000000458e-06	usr+sys: 1.29999999956e-05	real: 1.21593475342e-05
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_pg" already exists
+
+file: 500.n3.bz2	DB: PostgreSQL	config: user=vincent dbname=newtest_pg
+[parse] usr: 0.34896	sys: 0.015137	usr+sys: 0.364097	real: 0.681522846222
+[commit] usr: 6.99999999938e-05	sys: 3.49999999969e-05	usr+sys: 0.000104999999991	real: 0.242807865143
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_pg" already exists
+
+file: 1000.n3.bz2	DB: PostgreSQL	config: user=vincent dbname=newtest_pg
+[parse] usr: 0.654522	sys: 0.028981	usr+sys: 0.683503	real: 1.0236120224
+[commit] usr: 5.30000000083e-05	sys: 2.10000000038e-05	usr+sys: 7.40000000121e-05	real: 0.0916368961334
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_pg" already exists
+
+file: 4000.n3.bz2	DB: PostgreSQL	config: user=vincent dbname=newtest_pg
+[parse] usr: 2.023717	sys: 0.087191	usr+sys: 2.110908	real: 3.16649103165
+[commit] usr: 3.09999999928e-05	sys: 2.70000000029e-05	usr+sys: 5.80000000241e-05	real: 0.00231885910034
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_pg" already exists
+
+file: 32000.n3.bz2	DB: PostgreSQL	config: user=vincent dbname=newtest_pg
+[parse] usr: 16.518676	sys: 0.708765	usr+sys: 17.227441	real: 27.423938036
+[commit] usr: 2.9000000012e-05	sys: 2.50000000008e-05	usr+sys: 5.40000000058e-05	real: 0.000926971435547
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_sqapg" already exists
+
+file: 500.n3.bz2	DB: SQLAlchemy	config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 0.83381	sys: 0.075465	usr+sys: 0.909275	real: 1.73984599113
+[commit] usr: 8.00000000822e-06	sys: 9.99999997475e-07	usr+sys: 9.0000000057e-06	real: 7.86781311035e-06
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_sqapg" already exists
+
+file: 1000.n3.bz2	DB: SQLAlchemy	config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 1.472233	sys: 0.134268	usr+sys: 1.606501	real: 3.11055397987
+[commit] usr: 6.99999998233e-06	sys: 1.00000000458e-06	usr+sys: 7.9999999798e-06	real: 7.86781311035e-06
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_sqapg" already exists
+
+file: 4000.n3.bz2	DB: SQLAlchemy	config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 4.546069	sys: 0.414678	usr+sys: 4.960747	real: 10.4176549911
+[commit] usr: 7.9999999798e-06	sys: 0.0	usr+sys: 7.9999999798e-06	real: 8.82148742676e-06
+
+WARNING:root:An error occured during database creation, continuing. database "newtest_sqapg" already exists
+
+file: 32000.n3.bz2	DB: SQLAlchemy	config: postgresql+psycopg2://localhost/newtest_sqapg
+[parse] usr: 36.758534	sys: 3.290518	usr+sys: 40.049052	real: 86.8087410927
+[commit] usr: 9.0000000057e-06	sys: 9.99999997475e-07	usr+sys: 1.00000000032e-05	real: 8.82148742676e-06

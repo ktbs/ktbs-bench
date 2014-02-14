@@ -48,7 +48,7 @@ def bench(stores, datadir, outfile=None):
         files = filter(lambda f: f.endswith('.n3.bz2'), listdir(datadir))
         files.sort(key=natural_keys)
 
-        for fcomp in files[:3]:
+        for fcomp in [files[0], files[1], files[3], files[6]]:
             f = BZ2File(datadir + fcomp)  # decompress file, returns a file object
 
             # Create the database
