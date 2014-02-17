@@ -24,5 +24,9 @@ class Timer:
         self.delta = [stop - start for start, stop in zip(self.start_time, self.stop_time)]
 
     def __repr__(self):
-        return 'usr: %s\tsys: %s\tusr+sys: %s\t real: %s' %\
-               (self.delta[0], self.delta[1], self.delta[0]+self.delta[1], self.delta[2])
+        if self.stop_time is not None:
+            res = 'usr: %s\tsys: %s\tusr+sys: %s\t real: %s' %\
+                  (self.delta[0], self.delta[1], self.delta[0]+self.delta[1], self.delta[2])
+        else:
+            res = 'timer has not been stopped.'
+        return res
