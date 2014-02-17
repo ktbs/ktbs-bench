@@ -11,7 +11,8 @@ class Timer:
         self.stop_time = None
         self.delta = None
 
-    def tick(self):
+    @staticmethod
+    def tick():
         """Return usr, sys and real times."""
         times = list(resource.getrusage(resource.RUSAGE_SELF)[:2])
         times.append(clock())
