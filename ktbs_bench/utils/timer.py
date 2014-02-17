@@ -1,5 +1,5 @@
 import resource
-from time import clock
+from time import time
 
 
 class Timer:
@@ -15,7 +15,7 @@ class Timer:
     def tick():
         """Return usr, sys and real times."""
         times = list(resource.getrusage(resource.RUSAGE_SELF)[:2])
-        times.append(clock())
+        times.append(time())
         return times
 
     def stop(self):
