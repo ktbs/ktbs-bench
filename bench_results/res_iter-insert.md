@@ -2,7 +2,8 @@
 
 FOR *5000 iterative inserts*, 5 loops
 
-*NOTE:* query might not be accurate, has it sometimes report 5000 or 5 x 5000 items
+*NOTE:* 4store will not overwrite the triples when doing the insert loop,
+therefore when querying you are querying N_INSERT*n_loops
 
 ## 4store
 ### iterative insert

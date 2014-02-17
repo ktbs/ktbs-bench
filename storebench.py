@@ -113,6 +113,7 @@ if __name__ == '__main__':
     sqla_sqlite = BenchStore('SQLAlchemy', 'sqlite:////tmp/t.db')
     postgres = BenchStore('PostgreSQL', 'user=vincent dbname=newtest_pg', pg_create, ["newtest_pg", "vincent"])
     slite = BenchStore('SQLite', '/tmp/t2.db')
+    sleepycat = BenchStore('Sleepycat', '/tmp/sc')
     stores = [slite, sqla_sqlite, postgres, sqla_pg]
 
     datadir = 'data/'
