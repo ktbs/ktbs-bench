@@ -1,3 +1,3 @@
 all = ['utils']
 
-import utils
+from . import utils
