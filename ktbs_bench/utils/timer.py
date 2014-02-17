@@ -31,6 +31,13 @@ class Timer:
         self.stop_time = self.tick()
         self.delta = [stop - start for start, stop in zip(self.start_time, self.stop_time)]
 
+    def get_times(self):
+        """Return the list of delta times."""
+        if self.delta is not None:
+            return self.delta
+        else:
+            logging.error("The timer has not been stopped yet.")
+
     def __repr__(self):
         if self.stop_time is not None:
             res = 'usr: %s\tsys: %s\tusr+sys: %s\t real: %s' %\
