@@ -1,4 +1,5 @@
 import resource
+import logging
 from time import time
 
 
@@ -17,6 +18,13 @@ class Timer:
         times = list(resource.getrusage(resource.RUSAGE_SELF)[:2])
         times.append(time())
         return times
+
+    def start(self):
+        """Start the timer"""
+        if self.start_time != []:
+            logging.warning('Start time has already been set. Continuing with previous value.')
+        else:
+            self.start_time = self.tick()
 
     def stop(self):
         """Stop the timer and compute delta time."""
