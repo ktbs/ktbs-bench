@@ -3,18 +3,17 @@ import graph_store as gs
 import rdflib as r
 
 # Define some graph
-gs_postgres = gs.GraphStore(open_args=["postgresql+psycopg2://localhost/newtest_sqapg", True],
-                            store='SQLAlchemy')
+gs_postgres = gs.GraphStore(store='SQLAlchemy', open_args=["postgresql+psycopg2://localhost/newtest_sqapg", True])
 
-gs_virtuoso = gs.GraphStore(open_args=[("http://localhost:8890/sparql/", "http://localhost:8890/sparql"), False],
-                            store='SPARQLUpdateStore',
-                            identifier=r.URIRef("http://localhost/tmp_store"))
+gs_virtuoso = gs.GraphStore(store='SPARQLUpdateStore',
+                            identifier=r.URIRef("http://localhost/tmp_store"),
+                            open_args=[("http://localhost:8890/sparql/", "http://localhost:8890/sparql"), False])
 
 graph_dict = {'postgres': gs_postgres, 'virtuoso': gs_virtuoso}
 
 
 # Start benchmarking
-gb = graph_bench.GraphBench(graph_dict, "/tmp/test.csv", time_indicator='real', n_repeat=3)
+gb = graph_bench.GraphBench(graph_dict, "/tmp/test.csv", time_indicator='real', n_repeat=1)
 
 
 def n_inserts(n, graph):
