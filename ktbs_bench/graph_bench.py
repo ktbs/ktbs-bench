@@ -24,9 +24,11 @@ class GraphBench:
         # Make a time wrapper, func() is executed only when time_wrapper() is called
         @wraps(func)
         def time_wrapper(timer, graph):
+            graph.connect()
             timer.start()
             func(graph)
             timer.stop()
+            graph.close()
             return timer.get_times()
 
         # Benchmark func against each graph
