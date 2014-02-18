@@ -9,19 +9,19 @@ class Timer:
         self.start_time = []
         if tick_now:
             self.start_time = self.tick()
-        self.stop_time = None
-        self.delta = None
+        self.stop_time = {}
+        self.delta = {}
 
     @staticmethod
     def tick():
         """Return usr, sys and real times."""
-        times = list(resource.getrusage(resource.RUSAGE_SELF)[:2])
-        times.append(time())
+        usage_times = resource.getrusage(resource.RUSAGE_SELF)[:2]
+        times = {'usr': usage_times[0], 'sys': usage_times[1], 'real': time()}
         return times
 
     def start(self):
         """Start the timer"""
-        if self.start_time != []:
+        if self.start_time:
             logging.warning('Start time has already been set. Continuing with previous value.')
         else:
             self.start_time = self.tick()
@@ -29,19 +29,20 @@ class Timer:
     def stop(self):
         """Stop the timer and compute delta time."""
         self.stop_time = self.tick()
-        self.delta = [stop - start for start, stop in zip(self.start_time, self.stop_time)]
+        for type in self.start_time.keys():
+            self.delta[type] = self.stop_time[type] - self.start_time[type]
 
     def get_times(self):
         """Return the list of delta times."""
-        if self.delta is not None:
+        if self.delta:
             return self.delta
         else:
             logging.error("The timer has not been stopped yet.")
 
     def __repr__(self):
-        if self.stop_time is not None:
-            res = 'usr: %s\tsys: %s\tusr+sys: %s\t real: %s' %\
-                  (self.delta[0], self.delta[1], self.delta[0]+self.delta[1], self.delta[2])
+        if self.stop_time:
+            res = 'usr: %s\tsys: %s\tusr+sys: %s\t real: %s' % \
+                  (self.delta['usr'], self.delta['sys'], self.delta['usr'] + self.delta['sys'], self.delta['real'])
         else:
             res = 'timer has not been stopped.'
         return res
