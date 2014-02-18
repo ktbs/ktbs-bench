@@ -1,30 +1,40 @@
 # -*- coding: utf-8 -*-
 
+import csv
 from functools import wraps
 
 from utils.timer import Timer
 
 
 class GraphBench:
-    def __init__(self):
+    def __init__(self, output_file=None):
         self.results = {}  # Results row: function, column: graph
-        self.list_graph = []
+        self.list_graph = ['NoneDB']
+        self.output_file = output_file
+        # Generate csv header
+        with open(self.output_file, 'wb') as csv_file:
+            csv_writer = csv.DictWriter(csv_file, ['func_name'] + self.list_graph)
+            csv_writer.writeheader()
 
     def bench(self, func):
-        timer = Timer(
-            tick_now=False)  # don't tick now as this is called on file parsing, func() is only called on run()
+        """Decorator to run a benchmark on selected function"""
+        timer = Timer(tick_now=False)  # don't tick now, func() is only called on run()
 
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def time_wrapper(*args, **kwargs):
             timer.start()
             func(*args, **kwargs)
             timer.stop()
             return timer.get_times()
 
-        self.results[func] = {}
-        return wrapper
+        # Benchmark func against each graph
+        row = {'func_name': func.__name__}
+        for graph_name in self.list_graph:
+            times = time_wrapper()
+            self.results[func.__name__] = {graph_name: times}
+            row[graph_name] = times[2]  # get real time for func
 
-    def run(self):
-        """Run all the benchmarks"""
-        for func in self.results.keys():
-            self.results[func] = func()  # TODO ne fonctionne pas comme prévu…
+        # Write bench to csv
+        with open(self.output_file, 'ab') as csv_file:
+            csv_writer = csv.DictWriter(csv_file, ['func_name'] + self.list_graph)
+            csv_writer.writerow(row)
