@@ -1,3 +1,5 @@
-__all__ = ['timer']
+__all__ = ['timer',
+           'decorators']
 
 from . import timer
+from . import decorators
