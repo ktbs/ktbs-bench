@@ -33,7 +33,7 @@ class Timer:
             self.delta[type] = self.stop_time[type] - self.start_time[type]
 
     def get_times(self):
-        """Return the list of delta times."""
+        """Return a dict of delta times."""
         if self.delta:
             return self.delta
         else:
