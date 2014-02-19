@@ -28,5 +28,6 @@ def scan_bench_files(directory):
 
 if __name__ == '__main__':
     args = docopt(__doc__, version='bench 0.1')
-    for file in scan_bench_files(args['<folder>']):
-        execfile(file)
+    arg_folder = args['<folder>']
+    for bench_file in scan_bench_files(arg_folder):
+        execfile(bench_file)

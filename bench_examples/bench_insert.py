@@ -1,5 +1,5 @@
-import graph_bench
-import graph_store as gs
+from ktbs_bench import graph_store as gs
+from ktbs_bench import graph_bench
 import rdflib as r
 
 # Define some graph
