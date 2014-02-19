@@ -2,9 +2,9 @@ from rdflib import Graph
 
 
 class GraphStore(Graph):
-    def __init__(self, open_args, *args, **kwargs):
+    def __init__(self, connect_args, *args, **kwargs):
         super(GraphStore, self).__init__(*args, **kwargs)
-        self.open_args = open_args
+        self.connect_args = connect_args
 
     def connect(self):
-        self.open(*self.open_args)
+        self.open(*self.connect_args)
