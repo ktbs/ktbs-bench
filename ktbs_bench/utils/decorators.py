@@ -15,15 +15,14 @@ def bench(f):
         f(*args, **kwargs)
         timer.stop()
 
-        res = [call_signature(f, *args, **kwargs),
-               timer.get_times()['real']]  # TODO penser a quel temps garder
+        res = {call_signature(f, *args, **kwargs): timer.get_times()['real']}  # TODO penser a quel temps garder
         return res
 
     return wrapped
 
 
 def call_signature(f, *args, **kwargs):
-    """Return a string representation of a function call"""
+    """Return a string representation of a function call."""
     call_args = getcallargs(f, *args, **kwargs)
     return ';'.join(["%s=%s" % (k, v) for k, v in call_args.items()])
 
