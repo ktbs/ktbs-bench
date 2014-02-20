@@ -25,12 +25,3 @@ def call_signature(f, *args, **kwargs):
     """Return a string representation of a function call."""
     call_args = getcallargs(f, *args, **kwargs)
     return ';'.join(["%s=%s" % (k, v) for k, v in call_args.items()])
-
-
-@bench
-def lala(a, b, c="default c", d="default d"):
-    print("lala est appelee")
-
-
-if __name__ == '__main__':
-    print(lala("cest a", "cest b", d="change d"))
