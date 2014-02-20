@@ -15,7 +15,8 @@ def bench(f):
         f(*args, **kwargs)
         timer.stop()
 
-        res = {call_signature(f, *args, **kwargs): timer.get_times()['real']}  # TODO penser a quel temps garder
+        res = [call_signature(f, *args, **kwargs),
+               timer.get_times()['real']]  # TODO penser a quel temps garder
         return res
 
     return wrapped
