@@ -166,17 +166,24 @@ if __name__ == '__main__':
     postgres = r.Graph('SQLAlchemy')
     postgres.open("postgresql+psycopg2://localhost/newtest_sqapg", True)
 
-    graph_dict = {'virtuoso': virtuoso, '4store': _4store, 'jena': jena, 'postgres': postgres}
+    sleepycat = r.Graph('Sleepycat')
+    sleepycat.open('/tmp/sc.db', True)
+
+    graph_dict = {'virtuoso': virtuoso, '4store': _4store, 'jena': jena, 'postgres': postgres, 'sleepycat': sleepycat}
+
+    # Print graph size
+    for graph_name, graph in graph_dict.items():
+        print("size of %s: %s" % (graph_name, len(graph)))
 
     # Define some files to get the triples from
     n3file_list = ['../data/500.rdfa']
 
     csv_columns = set()
 
-    # Inserting data
-    # for graph in graph_dict.values():
-    #     for n3file in n3file_list:
-    #         batch_insert(graph, n3file)
+    # Creating clean data
+    for graph in graph_dict.values():
+        for n3file in n3file_list:
+            batch_insert(graph, n3file)
 
     # Testing query
     all_res = []
