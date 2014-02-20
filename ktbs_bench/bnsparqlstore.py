@@ -308,9 +308,6 @@ class SPARQLStore(NSSPARQLWrapper, Store):
             self.addDefaultGraph(queryGraph)
         self.setQuery(query)
 
-        import pdb;
-
-        pdb.set_trace()
         return Result.parse(SPARQLWrapper.query(self).response)
 
     def triples(self, (s, p, o), context=None):
