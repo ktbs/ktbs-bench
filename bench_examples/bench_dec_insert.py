@@ -163,7 +163,10 @@ if __name__ == '__main__':
     jena = r.Graph('BN', identifier='http://localhost/test/jena/1/')
     jena.open(("http://localhost:3030/ds/query", "http://localhost:3030/ds/update"))
 
-    graph_dict = {'virtuoso': virtuoso, '4store': _4store, 'jena': jena}
+    postgres = r.Graph('SQLAlchemy')
+    postgres.open("postgresql+psycopg2://localhost/newtest_sqapg", True)
+
+    graph_dict = {'virtuoso': virtuoso, '4store': _4store, 'jena': jena, 'postgres': postgres}
 
     # Define some files to get the triples from
     n3file_list = ['../data/500.rdfa']
