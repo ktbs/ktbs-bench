@@ -7,10 +7,9 @@ from timer import Timer
 def bench(f):
     """Times a function given specific arguments."""
 
-    timer = Timer(tick_now=False)
-
     @wraps(f)
     def wrapped(*args, **kwargs):
+        timer = Timer(tick_now=False)
         timer.start()
         f(*args, **kwargs)
         timer.stop()
