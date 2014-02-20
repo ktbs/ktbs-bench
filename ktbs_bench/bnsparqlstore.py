@@ -206,7 +206,7 @@ class SPARQLStore(NSSPARQLWrapper, Store):
     If this is set this will work fine.
 
     """
-    formula_aware = False
+    formula_aware = True
     transaction_aware = False
     regex_matching = NATIVE_REGEX
 
