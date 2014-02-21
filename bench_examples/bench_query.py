@@ -11,14 +11,16 @@ postgres.open("postgresql+psycopg2://localhost/newtest_sqapg", True)
 data_dir = '../data'
 data_file = path.join(path.abspath(path.dirname(__file__)), data_dir, '8000.n3')
 
-postgres.parse(source=data_file, format="n3")
-postgres.close()
+#postgres.parse(source=data_file, format="n3")
+#postgres.close()
 
 # Make a graph store
 gb_postgres = gs.GraphStore(store='SQLAlchemy',
-                            connect_args=["postgresql+psycopg2://localhost/newtest_sqapg", True])
+                            connect_args={'configuration': "postgresql+psycopg2://localhost/newtest_sqapg",
+                                          'create': True})
 
-gb_sleepycat = gs.GraphStore(connect_args=['/tmp/sc.db', True])
+gb_sleepycat = gs.GraphStore(connect_args={'configuration': '/tmp/sc.db',
+                                           'create': True})
 
 graph_dict = {'postgres': gb_postgres, 'sleepycat': gb_sleepycat}
 

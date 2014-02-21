@@ -7,6 +7,7 @@ from timer import Timer
 def bench(f):
     """Times a function given specific arguments."""
 
+    # TODO mettre args (n_repeat, func) qui execute n_repeat fois et applique un reduce(res, func)
     @wraps(f)
     def wrapped(*args, **kwargs):
         timer = Timer(tick_now=False)

@@ -152,19 +152,23 @@ def query_sp2b_q9(graph):
 
 if __name__ == '__main__':
     # Define some graph/store to use
+    import postgres as pg
+    import sparqlstore
+
     r.plugin.register('BN', r.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
 
-    virtuoso = r.Graph('BN', identifier='http://localhost/test/virtuoso/1/')
-    virtuoso.open(("http://localhost:8890/sparql/", "http://localhost:8890/sparql"))
+    virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")
+    virtuoso.connect()
 
-    _4store = r.Graph('BN', identifier='http://localhost/test/4store/1/')
-    _4store.open(("http://localhost:8000/sparql/", "http://localhost:8000/update/"))
+    _4store = sparqlstore.get_sparqlstore("http://localhost:8000/sparql/", "http://localhost:8000/update/")
+    _4store.connect()
 
-    jena = r.Graph('BN', identifier='http://localhost/test/jena/1/')
-    jena.open(("http://localhost:3030/ds/query", "http://localhost:3030/ds/update"))
+    jena = sparqlstore.get_sparqlstore("http://localhost:3030/ds/query", "http://localhost:3030/ds/update")
+    jena.connect()
 
-    postgres = r.Graph('SQLAlchemy')
-    postgres.open("postgresql+psycopg2://localhost/newtest_sqapg", True)
+    postgres = pg.get_store("db_benchtest", "vincent")
+    postgres.create()
+    postgres.connect()
 
     sleepycat = r.Graph('Sleepycat')
     sleepycat.open('/tmp/sc.db', True)

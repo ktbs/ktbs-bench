@@ -1,3 +1,5 @@
+import logging
+
 from ktbs_bench import graph_store as gs
 import psycopg2 as pg
 
@@ -8,7 +10,11 @@ def pg_create(db_name, db_user):
         "dbname=%s user=%s" % (db_user, db_user))  # connect to db_user as db_name might not been created yet
     connection.set_isolation_level(pg.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
     cursor = connection.cursor()
-    cursor.execute("CREATE DATABASE %s" % db_name)
+    try:
+        cursor.execute("CREATE DATABASE %s" % db_name)
+    except pg.ProgrammingError:
+        logging.warning("An error occurred during database creation, trying to continue without creating a new one.")
+
     cursor.close()
     connection.close()
 
