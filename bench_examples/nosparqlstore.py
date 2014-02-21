@@ -19,9 +19,15 @@ def pg_create(db_name, db_user):
     connection.close()
 
 
-def get_store(db_name, db_user):
+def get_postgres(db_name, db_user):
     postgres_store = gs.GraphStore(store="SQLAlchemy",
                                    connect_args={'configuration': "postgresql+psycopg2://localhost/%s" % db_name,
                                                  'create': True},
                                    create_func=pg_create, create_args=[db_name, db_user])
     return postgres_store
+
+
+def get_sleepycat(db_path):
+    sleepycat = gs.GraphStore(store='Sleepycat',
+                              connect_args={'configuration': db_path, 'create': True})
+    return sleepycat
