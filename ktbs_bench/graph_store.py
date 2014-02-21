@@ -2,9 +2,10 @@ from rdflib import Graph
 
 
 class GraphStore(Graph):
-    def __init__(self, connect_args, *args, **kwargs):
+    def __init__(self, connect_args, create_func=None, *args, **kwargs):
         super(GraphStore, self).__init__(*args, **kwargs)
         self.connect_args = connect_args
+        self.create_func = create_func
 
     def connect(self):
         if isinstance(self.connect_args, list):
@@ -15,4 +16,5 @@ class GraphStore(Graph):
             raise TypeError("connect_args must be either a list or a dict.")
 
     def create(self):
-        pass
+        if self.create_func:
+            self.create_func()
