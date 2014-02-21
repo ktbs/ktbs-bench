@@ -152,42 +152,46 @@ def query_sp2b_q9(graph):
 
 if __name__ == '__main__':
     # Define some graph/store to use
-    import postgres as pg
+    import nosparqlstore
     import sparqlstore
 
     r.plugin.register('BN', r.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
 
-    virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")
-    virtuoso.connect()
+    virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/",
+                                           identifier="http://localhost/virtuoso/1")
 
-    _4store = sparqlstore.get_sparqlstore("http://localhost:8000/sparql/", "http://localhost:8000/update/")
-    _4store.connect()
+    _4store = sparqlstore.get_sparqlstore("http://localhost:8000/sparql/", "http://localhost:8000/update/",
+                                          identifier="http://localhost/4store/1")
 
-    jena = sparqlstore.get_sparqlstore("http://localhost:3030/ds/query", "http://localhost:3030/ds/update")
-    jena.connect()
+    jena = sparqlstore.get_sparqlstore("http://localhost:3030/ds/query", "http://localhost:3030/ds/update",
+                                       identifier="http://localhost/jena/1")
 
-    postgres = pg.get_store("db_benchtest", "vincent")
+    postgres = nosparqlstore.get_postgres("db_benchtest", "vincent")
     postgres.create()
-    postgres.connect()
 
-    sleepycat = r.Graph('Sleepycat')
-    sleepycat.open('/tmp/sc.db', True)
+    sleepycat = nosparqlstore.get_sleepycat('/tmp/sc.db')
+    sleepycat.create()
 
     graph_dict = {'virtuoso': virtuoso, '4store': _4store, 'jena': jena, 'postgres': postgres, 'sleepycat': sleepycat}
 
     # Print graph size
+    print("size of graph before inserts")
     for graph_name, graph in graph_dict.items():
-        print("size of %s: %s" % (graph_name, len(graph)))
+        graph.connect()
+        print("%s: %s" % (graph_name, len(graph)))
+        graph.close()
 
     # Define some files to get the triples from
-    n3file_list = ['../data/500.rdfa']
+    n3file_list = ['../data/32000.rdfa']
 
     csv_columns = set()
 
     # Creating clean data
     for graph in graph_dict.values():
         for n3file in n3file_list:
+            graph.connect()
             batch_insert(graph, n3file)
+            graph.close()
 
     # Testing query
     all_res = []
@@ -195,14 +199,20 @@ if __name__ == '__main__':
                        query_sp2b_q4, query_sp2b_q9]:
         func_res = {'func_name': query_func.__name__}
         for graph_name, graph in graph_dict.items():
+            graph.connect()
             time_res = query_func(graph)
             func_res[graph_name] = time_res[1]
             csv_columns.add(graph_name)
+            graph.close()
 
         all_res.append(func_res)
 
+    # Store teardown
+    for store in graph_dict.values():
+        store.destroy()
+
     # Setup the result CSV
-    with open('/tmp/res.csv', 'wb') as outfile:
+    with open('/tmp/res3_32000.csv', 'wb') as outfile:
         res_csv = DictWriter(outfile, fieldnames=['func_name'] + list(csv_columns))
         res_csv.writeheader()
 
