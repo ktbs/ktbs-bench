@@ -10,7 +10,7 @@ CREATED_STORE = {'store_id': 'http://localhost/bs/virtuoso/persistent_store',
 
 
 @BS_VIRTUOSO.test
-def fail_query():
+def fail_connect_query():
     bad_query_endpoint = 'http://should_fail/'
     virtuoso = BenchableStore("SPARQLUpdateStore",
                               CREATED_STORE['store_id'],
@@ -19,6 +19,7 @@ def fail_query():
     fail = False
     try:
         virtuoso.connect()
+        # Doing a query forces RDFLib to actually connect to the query endpoint
         virtuoso.graph.query('select * where {?s ?p ?o}')
     except:
         fail = True
@@ -26,7 +27,28 @@ def fail_query():
 
 
 @BS_VIRTUOSO.test
+def fail_connect_update():
+    bad_update_endpoint = 'http://should_fail'
+    virtuoso = BenchableStore('SPARQLUpdateStore',
+                              CREATED_STORE['store_id'],
+                              (CREATED_STORE['config'][0], bad_update_endpoint),
+                              store_create=False)
+    fail = False
+    triple = (rdflib.URIRef('s'), rdflib.URIRef('p'), rdflib.URIRef('o'))
+    try:
+        virtuoso.connect()
+        # Doing an add forces RDFLib to actually connect to the update endpoint
+        virtuoso.graph.add(triple)
+    except:
+        fail = True
+    else:
+        virtuoso.graph.remove(triple)
+    assert fail
+
+
+@BS_VIRTUOSO.test
 def succeed_connect():
+    """Test if the server is up"""
     virtuoso = BenchableStore('SPARQLUpdateStore',
                               CREATED_STORE['store_id'],
                               CREATED_STORE['config'],
@@ -38,22 +60,6 @@ def succeed_connect():
     except:
         succeed = False
     assert succeed
-
-
-@BS_VIRTUOSO.test
-def fail_update():
-    bad_update_endpoint = 'http://should_fail'
-    virtuoso = BenchableStore('SPARQLUpdateStore',
-                              CREATED_STORE['store_id'],
-                              (CREATED_STORE['config'][0], bad_update_endpoint),
-                              store_create=False)
-    fail = False
-    try:
-        virtuoso.connect()
-        virtuoso.graph.add((rdflib.URIRef('s'), rdflib.URIRef('p'), rdflib.URIRef('o')))
-    except:
-        fail = True
-    assert fail
 
 
 @BS_VIRTUOSO.test
