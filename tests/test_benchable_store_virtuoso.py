@@ -1,21 +1,24 @@
+from uuid import uuid1
+
 from attest import Tests
 from ktbs_bench.benchable_store import BenchableStore
 import rdflib
 
-BS_VIRTUOSO = Tests()
 
-# Previously created store are here
-CREATED_STORE = {'store_id': 'http://localhost/bs/virtuoso/persistent_store',
-                 'config': ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")}
+VIRTUOSO_CONNECT = Tests()
+EMPTY_STORE = {'store_id': 'http://localhost/bs/virtuoso/test/empty_store/',
+               'config': ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")}
+
+VIRTUOSO_NOT_EMPTY = Tests()
 
 
-@BS_VIRTUOSO.test
+@VIRTUOSO_CONNECT.test
 def fail_connect_query():
     """Test that the store should not connect if the query endpoint is wrong."""
     bad_query_endpoint = 'http://should_fail/'
     virtuoso = BenchableStore("SPARQLUpdateStore",
-                              CREATED_STORE['store_id'],
-                              (bad_query_endpoint, CREATED_STORE['config'][1]),
+                              EMPTY_STORE['store_id'],
+                              (bad_query_endpoint, EMPTY_STORE['config'][1]),
                               store_create=False)
     fail = False
     try:
@@ -27,13 +30,13 @@ def fail_connect_query():
     assert fail
 
 
-@BS_VIRTUOSO.test
+@VIRTUOSO_CONNECT.test
 def fail_connect_update():
     """Test that the store should not connect if the update endpoint is wrong."""
     bad_update_endpoint = 'http://should_fail'
     virtuoso = BenchableStore('SPARQLUpdateStore',
-                              CREATED_STORE['store_id'],
-                              (CREATED_STORE['config'][0], bad_update_endpoint),
+                              EMPTY_STORE['store_id'],
+                              (EMPTY_STORE['config'][0], bad_update_endpoint),
                               store_create=False)
     fail = False
     triple = (rdflib.URIRef('s'), rdflib.URIRef('p'), rdflib.URIRef('o'))
@@ -48,12 +51,12 @@ def fail_connect_update():
     assert fail
 
 
-@BS_VIRTUOSO.test
+@VIRTUOSO_CONNECT.test
 def succeed_connect():
     """Test if the server is up."""
     virtuoso = BenchableStore('SPARQLUpdateStore',
-                              CREATED_STORE['store_id'],
-                              CREATED_STORE['config'],
+                              EMPTY_STORE['store_id'],
+                              EMPTY_STORE['config'],
                               store_create=False)
     succeed = True
     try:
@@ -64,24 +67,35 @@ def succeed_connect():
     assert succeed
 
 
-@BS_VIRTUOSO.test
-def test_destroy():
+@VIRTUOSO_NOT_EMPTY.context
+def connect():
+    try:
+        virtuoso = BenchableStore('SPARQLUpdateStore',
+                                  'http://localhost/bs/virtuoso/test/%s' % uuid1(),
+                                  ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/"),
+                                  store_create=False)
+        virtuoso.connect()
+
+        # Put some triples in the graph
+        for i in xrange(100):
+            virtuoso.graph.add((rdflib.URIRef('http://localhost/triple/s/%s' % i),
+                                rdflib.URIRef('http://localhost/triple/p/%s' % i),
+                                rdflib.URIRef('http://localhost/triple/o/%s' % i)))
+        yield virtuoso
+    finally:
+        pass  # Could have use close(), but not implemented for SPARQL store in RDFLib
+
+
+@VIRTUOSO_NOT_EMPTY.test
+def test_destroy(benchable_store):
     """Empty a graph, there should be not a single triple in the store after destroy()"""
-    virtuoso = BenchableStore('SPARQLUpdateStore',
-                              CREATED_STORE['store_id'],
-                              CREATED_STORE['config'],
-                              store_create=False)
-    virtuoso.connect()
-
-    # Adding a triple to the store, so it has at least one
-    virtuoso.graph.add((rdflib.URIRef('s'), rdflib.URIRef('p'), rdflib.URIRef('o')))
-
     # Remove all triples from the store
-    virtuoso.destroy()
+    benchable_store.destroy()
 
-    triple_count = len(virtuoso.graph)
+    triple_count = len(benchable_store.graph)
     assert triple_count == 0
 
 
 if __name__ == '__main__':
-    BS_VIRTUOSO.run()
+    VIRTUOSO_CONNECT.run()
+    VIRTUOSO_NOT_EMPTY.run()

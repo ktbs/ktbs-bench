@@ -26,11 +26,11 @@ class BenchableStore:
     def destroy(self):
         if isinstance(self.graph.store, bn_SPARQLStore) \
                 or isinstance(self.graph.store, SPARQLStore):
-            self.empty_sparql()
+            self.delete_graph()
         else:
             self.graph.destroy(self._store_config)
 
-    def empty_sparql(self):
+    def delete_graph(self):
         """Try to destroy the graph as if the current store is a SPARQLStore."""
         try:
             self.graph.update("""
