@@ -13,12 +13,8 @@ class BenchableStore:
         self._store_config = store_config
         self._store_create = store_create
 
-    def connect(self, store_create=None):
-        if store_create:
-            do_create = store_create
-        else:
-            do_create = self._store_create
-        self.graph.open(self._store_config, create=do_create)
+    def connect(self):
+        return self.graph.open(configuration=self._store_config, create=self._store_create)
 
     def close(self, commit_pending_transaction=False):
         self.graph.close(commit_pending_transaction=commit_pending_transaction)
