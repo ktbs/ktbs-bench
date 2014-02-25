@@ -233,12 +233,12 @@ if __name__ == '__main__':
                                        identifier="http://localhost/jena/3")
 
     postgres = nosparqlstore.get_postgres("tmp200", "vincent")
-    postgres.create()
+    # postgres.create()
 
-    sleepycat = nosparqlstore.get_sleepycat('/tmp/sc2.db')
+    sleepycat = nosparqlstore.get_sleepycat('/tmp/sc32000_2.db')
     sleepycat.create()
 
-    graph_dict = {'virtuoso': virtuoso, '4store': _4store, 'jena': jena, 'postgres': postgres, 'sleepycat': sleepycat}
+    graph_dict = {'sleepycat': sleepycat}
 
     # Print graph size
     print("size of graph before inserts")
@@ -278,7 +278,7 @@ if __name__ == '__main__':
         store.destroy()
 
     # Setup the result CSV
-    with open('/tmp/res6_32000.csv', 'wb') as outfile:
+    with open('/tmp/res8_32000.csv', 'wb') as outfile:
         res_csv = DictWriter(outfile, fieldnames=['func_name'] + list(csv_columns))
         res_csv.writeheader()
 
