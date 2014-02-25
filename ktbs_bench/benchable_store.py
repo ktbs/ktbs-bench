@@ -2,9 +2,9 @@ from rdflib import Graph
 from ktbs_bench.bnsparqlstore import SPARQLStore
 
 
-class GraphStore(Graph):
+class BenchableStore(Graph):
     def __init__(self, connect_args, create_func=None, create_args=[], *args, **kwargs):
-        super(GraphStore, self).__init__(*args, **kwargs)
+        super(BenchableStore, self).__init__(*args, **kwargs)
         self.connect_args = connect_args
         self.create_func = create_func
         self.create_args = create_args
@@ -24,7 +24,7 @@ class GraphStore(Graph):
         if isinstance(self.store, SPARQLStore):
             self.sparql_destroy()
         else:
-            super(GraphStore, self).destroy(self.connect_args['configuration'])
+            super(BenchableStore, self).destroy(self.connect_args['configuration'])
 
     def sparql_destroy(self):
         """Try to destroy the graph as if the current store is a SPARQLStore."""

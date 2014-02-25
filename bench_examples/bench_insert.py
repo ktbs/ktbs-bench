@@ -1,13 +1,14 @@
-from ktbs_bench import graph_store as gs
+from ktbs_bench import benchable_store as bs
 from ktbs_bench import graph_bench
 import rdflib as r
 
 # Define some graph
-gs_postgres = gs.GraphStore(store='SQLAlchemy', connect_args=["postgresql+psycopg2://localhost/newtest_sqapg", True])
+gs_postgres = bs.BenchableStore(store='SQLAlchemy',
+                                connect_args=["postgresql+psycopg2://localhost/newtest_sqapg", True])
 
-gs_virtuoso = gs.GraphStore(store='SPARQLUpdateStore',
-                            identifier=r.URIRef("http://localhost/tmp_store"),
-                            connect_args=[("http://localhost:8890/sparql/", "http://localhost:8890/sparql"), False])
+gs_virtuoso = bs.BenchableStore(store='SPARQLUpdateStore',
+                                identifier=r.URIRef("http://localhost/tmp_store"),
+                                connect_args=[("http://localhost:8890/sparql/", "http://localhost:8890/sparql"), False])
 
 graph_dict = {'postgres': gs_postgres, 'virtuoso': gs_virtuoso}
 
