@@ -1,5 +1,6 @@
 from rdflib import Graph
-from ktbs_bench.bnsparqlstore import SPARQLStore
+from rdflib.plugins.stores.sparqlstore import SPARQLStore
+from ktbs_bench.bnsparqlstore import SPARQLStore as bn_SPARQLStore
 
 
 class BenchableStore:
@@ -20,7 +21,8 @@ class BenchableStore:
         self.graph.close(commit_pending_transaction=commit_pending_transaction)
 
     def destroy(self):
-        if isinstance(self.graph.store, SPARQLStore):
+        if isinstance(self.graph.store, bn_SPARQLStore) \
+                or isinstance(self.graph.store, SPARQLStore):
             self.sparql_destroy()
         else:
             self.graph.destroy(self._store_config)
