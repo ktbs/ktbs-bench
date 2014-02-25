@@ -11,6 +11,7 @@ CREATED_STORE = {'store_id': 'http://localhost/bs/virtuoso/persistent_store',
 
 @BS_VIRTUOSO.test
 def fail_connect_query():
+    """Test that the store should not connect if the query endpoint is wrong."""
     bad_query_endpoint = 'http://should_fail/'
     virtuoso = BenchableStore("SPARQLUpdateStore",
                               CREATED_STORE['store_id'],
@@ -28,6 +29,7 @@ def fail_connect_query():
 
 @BS_VIRTUOSO.test
 def fail_connect_update():
+    """Test that the store should not connect if the update endpoint is wrong."""
     bad_update_endpoint = 'http://should_fail'
     virtuoso = BenchableStore('SPARQLUpdateStore',
                               CREATED_STORE['store_id'],
@@ -48,7 +50,7 @@ def fail_connect_update():
 
 @BS_VIRTUOSO.test
 def succeed_connect():
-    """Test if the server is up"""
+    """Test if the server is up."""
     virtuoso = BenchableStore('SPARQLUpdateStore',
                               CREATED_STORE['store_id'],
                               CREATED_STORE['config'],
@@ -64,6 +66,7 @@ def succeed_connect():
 
 @BS_VIRTUOSO.test
 def test_destroy():
+    """Empty a graph, there should be not a single triple in the store after destroy()"""
     virtuoso = BenchableStore('SPARQLUpdateStore',
                               CREATED_STORE['store_id'],
                               CREATED_STORE['config'],
