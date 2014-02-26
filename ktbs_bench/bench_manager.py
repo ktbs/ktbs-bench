@@ -7,6 +7,7 @@ class BenchManager:
     def __init__(self):
         self._contexts = []
         self._bench_funcs = []
+        self._results = {}
 
     def bench(self, func):
         """Prepare a function to be benched and add it to the list to be run later."""
@@ -20,4 +21,11 @@ class BenchManager:
 
     def run(self, output_file):
         """Execute each collected function against each context."""
-        pass
+        for func in self._bench_funcs:
+            self._results[func.__name__] = {}
+            for context in self._contexts:
+                with context() as arg:
+                    if not isinstance(arg, tuple):
+                        arg = tuple([arg])  # Make arg a tuple of one element
+                    _, res_time = func(*arg)
+                self._results[func.__name__][context.__name__] = res_time
