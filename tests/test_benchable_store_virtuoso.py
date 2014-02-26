@@ -1,6 +1,5 @@
 from uuid import uuid1
 
-from attest import Tests
 from ktbs_bench.benchable_store import BenchableStore
 import rdflib
 
