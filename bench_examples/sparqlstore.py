@@ -5,6 +5,6 @@ rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SP
 
 
 def get_sparqlstore(query_endpoint, update_endpoint, identifier="http://localhost/generic_sparqlstore/"):
-    triple_store = BenchableStore(store='BN', identifier=identifier,
-                                  connect_args={'configuration': (query_endpoint, update_endpoint)})
+    triple_store = BenchableStore(store='BN', graph_id=identifier,
+                                  store_config=(query_endpoint, update_endpoint))
     return triple_store
