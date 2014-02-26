@@ -239,6 +239,8 @@ def query_sp2b_q5b(graph):
 
 @bmgr.bench
 def query_sp2b_q6(graph):
+    """Return, for each year, the set of all publications authored by persons
+    that have not published in years before."""
     graph.query("""
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
@@ -300,6 +302,8 @@ def query_sp2b_q7(graph):
 
 @bmgr.bench
 def query_sp2b_q8(graph):
+    """Compute authors that have published with Paul Erdoes,
+    or with an author that has published with Paul Erdoes."""
     graph.query("""
         PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -371,6 +375,9 @@ def query_sp2b_q9(graph):
 
 @bmgr.bench
 def query_sp2b_q10(graph):
+    """Return all subjects that stand in any relation to Paul Erdoes.
+    In our scenario,the query might also be formulated as
+    "Return publications and venues in which Paul Erdoes is involved either as author or as editor"."""
     graph.query("""
         PREFIX person: <http://localhost/persons/>
 
@@ -383,6 +390,7 @@ def query_sp2b_q10(graph):
 
 @bmgr.bench
 def query_sp2b_q11(graph):
+    """Return (up to) 10 electronic edition URLs starting from the 51th publication, in lexicographical order."""
     graph.query("""
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -398,6 +406,8 @@ def query_sp2b_q11(graph):
 
 @bmgr.bench
 def query_sp2b_q12a(graph):
+    """Return yes if a person occurs as author of at least one inproceeding and article, no otherwise.
+    This query is the boolean counterpart of Q5a."""
     graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
@@ -418,6 +428,8 @@ def query_sp2b_q12a(graph):
 
 @bmgr.bench
 def query_sp2b_q12b(graph):
+    """Return yes if an author has published with Paul Erdoes or with an author that has published with Paul Erdoes,
+    and no otherwise. This query is the boolean counterpart of Q8. """
     graph.query("""
         PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -449,6 +461,7 @@ def query_sp2b_q12b(graph):
 
 @bmgr.bench
 def query_sp2b_q12c(graph):
+    """Check if the person John Q Public exists in the database."""
     graph.query("""
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX person: <http://localhost/persons/>
