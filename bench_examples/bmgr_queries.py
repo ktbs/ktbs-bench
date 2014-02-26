@@ -10,7 +10,7 @@ bmgr = BenchManager()
 # Making the store contexts
 @bmgr.context
 def virtuoso():
-    rand_graph_id = 'http://localhost/bench/virtuoso/multiple_graph/%s/' % randint(1, 10)
+    rand_graph_id = 'http://localhost/bench/virtuoso/multiple_graph/%s/' % randint(1, 1)
     bs_virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/",
                                               identifier=rand_graph_id)
     try:
@@ -194,6 +194,143 @@ def query_sp2b_q4(graph):
 
 
 @bmgr.bench
+def query_sp2b_q5a(graph):
+    """Return the names of all persons that occur as author of at least one inproceeding
+    and at least one article."""
+    graph.query("""
+        PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
+        PREFIX bench: <http://localhost/vocabulary/bench/>
+        PREFIX dc:    <http://purl.org/dc/elements/1.1/>
+
+        SELECT DISTINCT ?person ?name
+        WHERE {
+          ?article rdf:type bench:Article .
+          ?article dc:creator ?person .
+          ?inproc rdf:type bench:Inproceedings .
+          ?inproc dc:creator ?person2 .
+          ?person foaf:name ?name .
+          ?person2 foaf:name ?name2
+          FILTER (?name=?name2)
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q5b(graph):
+    """Return the names of all persons that occur as author of at least one inproceeding
+    and at least one article (same as Q5a)."""
+    graph.query("""
+        PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
+        PREFIX bench: <http://localhost/vocabulary/bench/>
+        PREFIX dc:    <http://purl.org/dc/elements/1.1/>
+
+        SELECT DISTINCT ?person ?name
+        WHERE {
+          ?article rdf:type bench:Article .
+          ?article dc:creator ?person .
+          ?inproc rdf:type bench:Inproceedings .
+          ?inproc dc:creator ?person .
+          ?person foaf:name ?name
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q6(graph):
+    graph.query("""
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+        PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+        PREFIX dcterms: <http://purl.org/dc/terms/>
+
+        SELECT ?yr ?name ?document
+        WHERE {
+          ?class rdfs:subClassOf foaf:Document .
+          ?document rdf:type ?class .
+          ?document dcterms:issued ?yr .
+          ?document dc:creator ?author .
+          ?author foaf:name ?name
+          OPTIONAL {
+            ?class2 rdfs:subClassOf foaf:Document .
+            ?document2 rdf:type ?class2 .
+            ?document2 dcterms:issued ?yr2 .
+            ?document2 dc:creator ?author2
+            FILTER (?author=?author2 && ?yr2<?yr)
+          } FILTER (!bound(?author2))
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q7(graph):
+    """Return the titles of all papers that have been cited at least once,
+    but not by any paper that has not been cited itself."""
+    graph.query("""
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
+        PREFIX dc:      <http://purl.org/dc/elements/1.1/>
+        PREFIX dcterms: <http://purl.org/dc/terms/>
+
+        SELECT DISTINCT ?title
+        WHERE {
+          ?class rdfs:subClassOf foaf:Document .
+          ?doc rdf:type ?class .
+          ?doc dc:title ?title .
+          ?bag2 ?member2 ?doc .
+          ?doc2 dcterms:references ?bag2
+          OPTIONAL {
+            ?class3 rdfs:subClassOf foaf:Document .
+            ?doc3 rdf:type ?class3 .
+            ?doc3 dcterms:references ?bag3 .
+            ?bag3 ?member3 ?doc
+            OPTIONAL {
+              ?class4 rdfs:subClassOf foaf:Document .
+              ?doc4 rdf:type ?class4 .
+              ?doc4 dcterms:references ?bag4 .
+              ?bag4 ?member4 ?doc3
+            } FILTER (!bound(?doc4))
+          } FILTER (!bound(?doc3))
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q8(graph):
+    graph.query("""
+        PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        PREFIX dc:   <http://purl.org/dc/elements/1.1/>
+
+        SELECT DISTINCT ?name
+        WHERE {
+          ?erdoes rdf:type foaf:Person .
+          ?erdoes foaf:name "Paul Erdoes"^^xsd:string .
+          {
+            ?document dc:creator ?erdoes .
+            ?document dc:creator ?author .
+            ?document2 dc:creator ?author .
+            ?document2 dc:creator ?author2 .
+            ?author2 foaf:name ?name
+            FILTER (?author!=?erdoes &&
+                    ?document2!=?document &&
+                    ?author2!=?erdoes &&
+                    ?author2!=?author)
+          } UNION {
+            ?document dc:creator ?erdoes.
+            ?document dc:creator ?author.
+            ?author foaf:name ?name
+            FILTER (?author!=?erdoes)
+          }
+        }
+    """)
+
+
+@bmgr.bench
 def query_sp2b_q9(graph):
     """Return incoming and outgoing properties of persons.
 
@@ -232,6 +369,96 @@ def query_sp2b_q9(graph):
     """)
 
 
+@bmgr.bench
+def query_sp2b_q10(graph):
+    graph.query("""
+        PREFIX person: <http://localhost/persons/>
+
+        SELECT ?subject ?predicate
+        WHERE {
+          ?subject ?predicate person:Paul_Erdoes
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q11(graph):
+    graph.query("""
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+        SELECT ?ee
+        WHERE {
+          ?publication rdfs:seeAlso ?ee
+        }
+        ORDER BY ?ee
+        LIMIT 10
+        OFFSET 50
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q12a(graph):
+    graph.query("""
+        PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
+        PREFIX bench: <http://localhost/vocabulary/bench/>
+        PREFIX dc:    <http://purl.org/dc/elements/1.1/>
+
+        ASK {
+          ?article rdf:type bench:Article .
+          ?article dc:creator ?person1 .
+          ?inproc  rdf:type bench:Inproceedings .
+          ?inproc  dc:creator ?person2 .
+          ?person1 foaf:name ?name1 .
+          ?person2 foaf:name ?name2
+          FILTER (?name1=?name2)
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q12b(graph):
+    graph.query("""
+        PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+        PREFIX dc:   <http://purl.org/dc/elements/1.1/>
+
+        ASK {
+          ?erdoes rdf:type foaf:Person .
+          ?erdoes foaf:name "Paul Erdoes"^^xsd:string .
+          {
+            ?document dc:creator ?erdoes .
+            ?document dc:creator ?author .
+            ?document2 dc:creator ?author .
+            ?document2 dc:creator ?author2 .
+            ?author2 foaf:name ?name
+            FILTER (?author!=?erdoes &&
+                    ?document2!=?document &&
+                    ?author2!=?erdoes &&
+                    ?author2!=?author)
+          } UNION {
+            ?document dc:creator ?erdoes .
+            ?document dc:creator ?author .
+            ?author foaf:name ?name
+            FILTER (?author!=?erdoes)
+          }
+        }
+    """)
+
+
+@bmgr.bench
+def query_sp2b_q12c(graph):
+    graph.query("""
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX person: <http://localhost/persons/>
+    PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+    ASK {
+      person:John_Q_Public rdf:type foaf:Person.
+    }
+    """)
+
+
 if __name__ == '__main__':
-    for ind_file in xrange(20):
-        bmgr.run('/tmp/res_bmgr_10graph_' + str(ind_file) + '.csv')
+    bmgr.run('/tmp/none.csv')
