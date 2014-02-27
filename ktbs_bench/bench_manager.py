@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from csv import DictWriter
+import logging
 
 from ktbs_bench.utils.decorators import bench as util_bench
 
@@ -20,12 +21,18 @@ class BenchManager:
         func = contextmanager(func)
         self._contexts.append(func)
 
-    def run(self, output_filename):
+    def run(self, output_filename, show_log=False):
         """Execute each collected function against each context."""
         # Run the bench for each function against each context
+        if show_log:
+            logging.getLogger().setLevel(logging.INFO)
         for func in self._bench_funcs:
             self._results[func.__name__] = {}
+            if show_log:
+                logging.info('Func: %s' % func.__name__)
             for context in self._contexts:
+                if show_log:
+                    logging.info('with context: %s' % context.__name__)
                 with context() as arg:
                     if not isinstance(arg, tuple):
                         arg = tuple([arg])  # Make arg a tuple of one element
