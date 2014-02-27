@@ -4,13 +4,18 @@ from ktbs_bench.bench_manager import BenchManager
 import sparqlstore
 
 
+MAX_GRAPH = 1
 bmgr = BenchManager()
+
+
+def get_rand_graph(graph_prefix, max_graph):
+    return graph_prefix + str(randint(1, max_graph)) + '/'
 
 
 # Making the store contexts
 @bmgr.context
 def virtuoso():
-    rand_graph_id = 'http://localhost/bench/virtuoso/multiple_graph/%s/' % randint(1, 1)
+    rand_graph_id = get_rand_graph('http://localhost/bench/virtuoso/multiple_graph/', MAX_GRAPH)
     bs_virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/",
                                               identifier=rand_graph_id)
     try:
@@ -24,6 +29,36 @@ def virtuoso():
         # Stuff to do after we executed the bench function
         bs_virtuoso.close()
     del bs_virtuoso
+
+
+# @bmgr.context
+def jena():
+    rand_graph_id = get_rand_graph('http://localhost/bench/jena/multiple_graph/', MAX_GRAPH)
+    bs_jena = sparqlstore.get_sparqlstore('http://localhost:3030/ds/query', 'http://localhost:3030/ds/update',
+                                          identifier=rand_graph_id)
+    try:
+        bs_jena.connect()
+        n_triples = len(bs_jena.graph)
+        assert 32000 < n_triples < 33000
+        yield bs_jena.graph
+    finally:
+        bs_jena.close()
+    del bs_jena
+
+
+@bmgr.context
+def _4store():
+    rand_graph_id = get_rand_graph('http://localhost/bench/4store/multiple_graph/', MAX_GRAPH)
+    bs_4store = sparqlstore.get_sparqlstore('http://localhost:8000/sparql/', 'http://localhost:8000/update/',
+                                            identifier=rand_graph_id)
+    try:
+        bs_4store.connect()
+        n_triples = len(bs_4store.graph)
+        assert 32000 < n_triples < 33000
+        yield bs_4store.graph
+    finally:
+        bs_4store.close()
+    del bs_4store
 
 
 @bmgr.bench
