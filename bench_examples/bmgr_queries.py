@@ -3,6 +3,7 @@ from random import randint
 from ktbs_bench.bench_manager import BenchManager
 import sparqlstore
 import nosparqlstore
+import rdflib
 
 MAX_GRAPH = 1
 bmgr = BenchManager()
@@ -31,7 +32,7 @@ def virtuoso():
     del bs_virtuoso
 
 
-# @bmgr.context
+@bmgr.context
 def jena():
     rand_graph_id = get_rand_graph('http://localhost/bench/jena/multiple_graph/', MAX_GRAPH)
     bs_jena = sparqlstore.get_sparqlstore('http://localhost:3030/ds/query', 'http://localhost:3030/ds/update',
@@ -73,6 +74,34 @@ def postgres():
     finally:
         bs_postgres.close()
     del bs_postgres
+
+
+@bmgr.context
+def sleepycat():
+    rand_graph_id = get_rand_graph('http://localhost/bench/sleepycat/multiple_graph/', MAX_GRAPH)
+    bs_sleepycat = nosparqlstore.get_sleepycat('../sleepycat_db', rand_graph_id)
+    try:
+        bs_sleepycat.connect()
+        n_triples = len(bs_sleepycat.graph)
+        assert 32000 < n_triples < 33000
+        yield bs_sleepycat.graph
+    finally:
+        bs_sleepycat.close()
+    del bs_sleepycat
+
+
+@bmgr.context
+def memory():
+    rand_graph_id = get_rand_graph('http://localhost/bench/memory/multiple_graph/', MAX_GRAPH)
+    bs_memory = rdflib.Graph(identifier=rand_graph_id)
+    bs_memory.parse('../data/32000.n3', format='n3')
+    try:
+        n_triples = len(bs_memory)
+        assert 32000 < n_triples < 33000
+        yield bs_memory
+    finally:
+        bs_memory.close()
+    del bs_memory
 
 
 @bmgr.bench
@@ -523,4 +552,4 @@ def query_sp2b_q12c(graph):
 
 
 if __name__ == '__main__':
-    bmgr.run('/tmp/none.csv')
+    bmgr.run('/tmp/none.csv', show_log=True)
