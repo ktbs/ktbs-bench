@@ -2,7 +2,7 @@ from random import randint
 
 from ktbs_bench.bench_manager import BenchManager
 import sparqlstore
-
+import nosparqlstore
 
 MAX_GRAPH = 1
 bmgr = BenchManager()
@@ -59,6 +59,20 @@ def _4store():
     finally:
         bs_4store.close()
     del bs_4store
+
+
+@bmgr.context
+def postgres():
+    rand_graph_id = get_rand_graph('http://localhost/bench/postgres/multiple_graph/', MAX_GRAPH)
+    bs_postgres = nosparqlstore.get_postgres('multiple_graph', rand_graph_id)
+    try:
+        bs_postgres.connect()
+        n_triples = len(bs_postgres.graph)
+        assert 32000 < n_triples < 33000
+        yield bs_postgres.graph
+    finally:
+        bs_postgres.close()
+    del bs_postgres
 
 
 @bmgr.bench
