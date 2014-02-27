@@ -37,6 +37,8 @@ class BenchManager:
                     if not isinstance(arg, tuple):
                         arg = tuple([arg])  # Make arg a tuple of one element
                     _, res_time = func(*arg)
+                if show_log:
+                    logging.info('res time: %s' % res_time)
                 self._results[func.__name__][context.__name__] = res_time
 
         # Write output to a CSV file
