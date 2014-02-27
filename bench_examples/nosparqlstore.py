@@ -19,15 +19,14 @@ def pg_create(db_name, db_user):
     connection.close()
 
 
-def get_postgres(db_name, db_user):
-    postgres_store = bs.BenchableStore(store="SQLAlchemy",
-                                       connect_args={'configuration': "postgresql+psycopg2://localhost/%s" % db_name,
-                                                     'create': True},
-                                       create_func=pg_create, create_args=[db_name, db_user])
+def get_postgres(db_name, graph_id):
+    postgres_store = bs.BenchableStore(store="SQLAlchemy", graph_id=graph_id,
+                                       store_config='postgresql+psycopg2://localhost/%s' % db_name,
+                                       store_create=True)
     return postgres_store
 
 
-def get_sleepycat(db_path):
-    sleepycat = bs.BenchableStore(store='Sleepycat',
-                                  connect_args={'configuration': db_path, 'create': True})
+def get_sleepycat(db_path, graph_id):
+    sleepycat = bs.BenchableStore(store='Sleepycat', graph_id=graph_id,
+                                  store_config=db_path, store_create=True)
     return sleepycat
