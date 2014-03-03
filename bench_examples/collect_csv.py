@@ -1,5 +1,3 @@
-from sys import argv
-
 from os import listdir, path
 import pandas as pd
 
@@ -19,11 +17,37 @@ def concat_data(file_list):
 
 
 if __name__ == '__main__':
-    checkup_dir = argv[1]
-    files = get_files(checkup_dir, '.csv')
-    csv_dir = path.dirname(checkup_dir)
-    abs_files = map(lambda f: path.join(csv_dir, f), files)  # List of csv files with absolute paths
+    dirs = {1: '../bench_results/raw/selected_1graph/',
+            5: '../bench_results/raw/selected_5graph/'}
 
-    big_df = concat_data(abs_files)
-    big_df.groupby(big_df.index).mean().to_csv(path.join(csv_dir, 'mean.csv'))  # Output mean
-    big_df.groupby(big_df.index).std().to_csv(path.join(csv_dir, 'std.csv'))  # Output standard deviation
+    means = {k: None for k in dirs.keys()}
+
+    # Get the means for all runs
+    for n_graph, checkup_dir in dirs.items():
+        files = get_files(checkup_dir, '.csv')
+        csv_dir = path.dirname(checkup_dir)
+        abs_files = map(lambda f: path.join(csv_dir, f), files)  # list of csv files with absolute paths
+
+        big_df = concat_data(abs_files)
+        mean = big_df.groupby(big_df.index).mean()
+        means[n_graph] = mean
+        mean.to_csv(path.join(csv_dir, 'mean.csv'))  # outputs mean
+
+        big_df.groupby(big_df.index).std().to_csv(path.join(csv_dir, 'std.csv'))  # outputs standard deviation
+
+    # Build a dataframe per store
+    first_mean_df = means.values()[0]
+    store_names = set(first_mean_df.columns)  # populate before we do any intersection, otherwise it's always empty
+    for dataframe in means.values():
+        store_names.intersection_update(dataframe.columns)
+
+    all_store_query = {}
+    # Put empty dataframes in dict with store names as keys
+    for store_name in store_names:
+        all_store_query[store_name] = pd.DataFrame(index=means.keys(),
+                                                   columns=first_mean_df.index.values.tolist())
+    # Build each dataframe with the real values
+    for n_graph, mean_df in means.items():
+        for store_name in store_names:
+            for func_name in mean_df.index:
+                all_store_query[store_name][func_name][n_graph] = means[n_graph][store_name][func_name]
