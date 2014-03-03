@@ -1,5 +1,6 @@
 from os import listdir, path
 import pandas as pd
+from matplotlib import pyplot as plt
 
 
 def get_files(directory, file_extension):
@@ -51,3 +52,14 @@ if __name__ == '__main__':
         for store_name in store_names:
             for func_name in mean_df.index:
                 all_store_query[store_name][func_name][n_graph] = means[n_graph][store_name][func_name]
+
+    # Display all the figures
+    plt.figure()
+    n_subplots = len(all_store_query)
+    for ind_subplot, store_name in enumerate(all_store_query):
+        ax = plt.subplot(n_subplots, 1, ind_subplot)
+        ax.set_xlim(0, 6)
+        df = all_store_query[store_name]
+        plt.plot(df.index, df, 'o')
+        plt.title(store_name)
+    plt.show()
