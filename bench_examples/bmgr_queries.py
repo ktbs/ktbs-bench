@@ -5,12 +5,13 @@ import sparqlstore
 import nosparqlstore
 import rdflib
 
-MAX_GRAPH = 1
+N_RUN = 20
+MAX_GRAPH = 50
 bmgr = BenchManager()
 
 
 def get_rand_graph(graph_prefix, max_graph):
-    return graph_prefix + str(randint(1, max_graph)) + '/'
+    return graph_prefix + str(randint(0, max_graph - 1)) + '/'
 
 
 # Making the store contexts
@@ -32,7 +33,7 @@ def virtuoso():
     del bs_virtuoso
 
 
-@bmgr.context
+# @bmgr.context
 def jena():
     rand_graph_id = get_rand_graph('http://localhost/bench/jena/multiple_graph/', MAX_GRAPH)
     bs_jena = sparqlstore.get_sparqlstore('http://localhost:3030/ds/query', 'http://localhost:3030/ds/update',
@@ -47,7 +48,7 @@ def jena():
     del bs_jena
 
 
-@bmgr.context
+# @bmgr.context
 def _4store():
     rand_graph_id = get_rand_graph('http://localhost/bench/4store/multiple_graph/', MAX_GRAPH)
     bs_4store = sparqlstore.get_sparqlstore('http://localhost:8000/sparql/', 'http://localhost:8000/update/',
@@ -55,7 +56,8 @@ def _4store():
     try:
         bs_4store.connect()
         n_triples = len(bs_4store.graph)
-        assert 32000 < n_triples < 33000
+        # RDFLib count all the triples in the dataset for 4store, instead of the triples in the graph only.
+        assert MAX_GRAPH * 32000 < n_triples < MAX_GRAPH * 33000
         yield bs_4store.graph
     finally:
         bs_4store.close()
@@ -65,7 +67,7 @@ def _4store():
 @bmgr.context
 def postgres():
     rand_graph_id = get_rand_graph('http://localhost/bench/postgres/multiple_graph/', MAX_GRAPH)
-    bs_postgres = nosparqlstore.get_postgres('multiple_graph', rand_graph_id)
+    bs_postgres = nosparqlstore.get_postgres('persistent_store', rand_graph_id)
     try:
         bs_postgres.connect()
         n_triples = len(bs_postgres.graph)
@@ -90,7 +92,7 @@ def sleepycat():
     del bs_sleepycat
 
 
-@bmgr.context
+# @bmgr.context
 def memory():
     rand_graph_id = get_rand_graph('http://localhost/bench/memory/multiple_graph/', MAX_GRAPH)
     bs_memory = rdflib.Graph(identifier=rand_graph_id)
@@ -504,7 +506,7 @@ def query_sp2b_q12a(graph):
     """)
 
 
-@bmgr.bench
+# @bmgr.bench
 def query_sp2b_q12b(graph):
     """Return yes if an author has published with Paul Erdoes or with an author that has published with Paul Erdoes,
     and no otherwise. This query is the boolean counterpart of Q8. """
@@ -552,4 +554,25 @@ def query_sp2b_q12c(graph):
 
 
 if __name__ == '__main__':
-    bmgr.run('/tmp/none.csv', show_log=True)
+    # First pass to check that every store the right amount of triples
+    rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
+    backends = {'pg': {'store': 'SQLAlchemy',
+                       'id_sub': 'postgres',
+                       'open': 'postgresql+psycopg2://localhost/persistent_store'},
+                'sleepy': {'store': 'Sleepycat',
+                           'id_sub': 'sleepycat',
+                           'open': '../sleepycat_db'},
+                'virtuoso': {'store': 'BN',
+                             'id_sub': 'virtuoso',
+                             'open': ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")}}
+    for i in xrange(MAX_GRAPH):
+        for b in backends:
+            g = rdflib.Graph(backends[b]['store'],
+                             identifier='http://localhost/bench/%s/multiple_graph/%s/' % (backends[b]['id_sub'], i))
+            g.open(backends[b]['open'], create=False)
+            assert 32000 < len(g) < 33000
+            g.close()
+
+    # Run the benchs
+    for ind_run in xrange(6, N_RUN):
+        bmgr.run('../bench_results/raw/selected_10graph/res_queries_32000_%s.csv' % ind_run, show_log=True)
