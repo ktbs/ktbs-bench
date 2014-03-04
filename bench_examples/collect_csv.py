@@ -19,7 +19,8 @@ def concat_data(file_list):
 
 if __name__ == '__main__':
     dirs = {1: '../bench_results/raw/selected_1graph/',
-            5: '../bench_results/raw/selected_5graph/'}
+            5: '../bench_results/raw/selected_5graph/',
+            10: '../bench_results/raw/selected_10graph/'}
 
     means = {k: None for k in dirs.keys()}
 
@@ -54,12 +55,18 @@ if __name__ == '__main__':
                 all_store_query[store_name][func_name][n_graph] = means[n_graph][store_name][func_name]
 
     # Display all the figures
-    plt.figure()
+    print('displaying figure')
+    fig = plt.figure()
     n_subplots = len(all_store_query)
+    lines, labels = [], []
     for ind_subplot, store_name in enumerate(all_store_query):
-        ax = plt.subplot(n_subplots, 1, ind_subplot)
-        ax.set_xlim(0, 6)
+        ax = plt.subplot(1, n_subplots, ind_subplot)
+        ax.set_xlim(min(dirs.keys()) - 1, max(dirs.keys()) + 1)
         df = all_store_query[store_name]
-        plt.plot(df.index, df, 'o')
+        plot_lines = plt.plot(df.index, df, 'o')
+        if ind_subplot == 0:
+            lines += plot_lines
+            labels += df.columns.values.tolist()
         plt.title(store_name)
+    fig.legend(lines, labels, loc='upper right')
     plt.show()
