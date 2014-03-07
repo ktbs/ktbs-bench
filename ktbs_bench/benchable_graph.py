@@ -5,7 +5,7 @@ from rdflib.plugins.stores.sparqlstore import SPARQLStore
 from ktbs_bench.bnsparqlstore import SPARQLStore as bn_SPARQLStore
 
 
-class BenchableGraph:
+class BenchableGraph(object):
     """
     Provides a convenient way to use a graph for benchmarks.
 
@@ -14,10 +14,13 @@ class BenchableGraph:
         """
         :param store: Type of store to use.
         :type store: str
+
         :param graph_id: The graph identifier.
         :type graph_id: str
+
         :param store_config: Configuration to open the store.
         :type store_config: str, tuple
+
         :param graph_create: True to create the graph upon connecting.
         :type graph_create: bool
         """

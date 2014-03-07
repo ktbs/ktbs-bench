@@ -7,20 +7,13 @@ from timer import Timer
 def bench(f):
     """Decorator to time a function.
 
-    Parameters
-    ----------
-    f : function
-        The function to time.
+    :param f: The function to benchmark.
+    :type f: function
 
-    Returns
-    -------
-    call_signature : str
-        The signature of the function call, with parameter names and values.
-    time : float
-        The real time taken to execute the function, in second.
+    :returns: call_signature and real time taken to execute the function, in second.
+    :rtype: tuple
 
     Examples
-    --------
     >>> @bench
     ... def square_list(numbers):
     ...     for ind_num in range(len(numbers)):
@@ -52,22 +45,19 @@ def bench(f):
 def call_signature(f, *args, **kwargs):
     """Return a string representation of a function call.
 
-    Parameters
-    ----------
-    f : function
-        The function to get the call signature from.
-    args : list
-        List of arguments.
-    kwargs : dict
-        Dictionary of argument names and values.
+    :param f: The function to get the call signature from.
+    :type f: function
 
-    Returns
-    -------
-    out : str
-        String representation of the function call
+    :param args: List of arguments.
+    :type args: list
 
-    Examples
-    --------
+    :param kwargs: Dictionary of argument names and values.
+    :type kwargs: dict
+
+    :return: representation of a function call.
+    :rtype: str
+
+    Examples:
     >>> def square(num):
     ...     return num*num
     >>> call_signature(square, 4)

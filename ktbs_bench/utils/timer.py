@@ -10,9 +10,7 @@ class Timer(object):
     The timer is a little object that must be started and stopped to compute
     delta times.
 
-    Examples
-    --------
-    Measuring time
+    Examples:
     >>> from time import sleep
     >>> my_timer = Timer()  # timer start at instantiation by default
     >>> sleep(1)
@@ -24,6 +22,10 @@ class Timer(object):
     """
 
     def __init__(self, tick_now=True):
+        """
+        :param tick_now: True to start the timer on class instantiation.
+        :type tick_now: bool
+        """
         self.start_time = []
         if tick_now:
             self.start_time = self.tick()
@@ -32,20 +34,13 @@ class Timer(object):
 
     @staticmethod
     def tick():
-        """Return real, sys and usr times.
+        """Real, sys and usr times since the start of the process.
 
-        Returns
-        -------
-        usr : float
-            User CPU time since the start of the process.
-        sys : float
-            System CPU time since the start of the process.
-        real : float
-            Time since the start of the UNIX epoch.
+        :return: real, system and user CPU times.
+        :rtype: dict
 
-        References
-        ----------
-        .. [1] Ipython %time magic command implementation http://git.io/GJpSNA
+        References:
+        .. _Ipython %time magic command implementation: http://git.io/GJpSNA
         """
         usage_times = resource.getrusage(resource.RUSAGE_SELF)[:2]
         times = {'usr': usage_times[0], 'sys': usage_times[1], 'real': time()}
