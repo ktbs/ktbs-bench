@@ -1,4 +1,4 @@
-from ktbs_bench.benchable_store import BenchableStore
+from ktbs_bench.benchable_graph import BenchableGraph
 import rdflib
 
 
@@ -8,7 +8,7 @@ CREATED_STORE = {'store_id': 'http://localhost/bs/pg/persistent_store',
 
 
 def test_connect_existing_pg():
-    postgres = BenchableStore("SQLAlchemy",
+    postgres = BenchableGraph("SQLAlchemy",
                               CREATED_STORE['store_id'],
                               CREATED_STORE['config'],
                               store_create=False)

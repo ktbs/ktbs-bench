@@ -1,7 +1,7 @@
 from uuid import uuid1
 
 import pytest
-from ktbs_bench.benchable_store import BenchableStore
+from ktbs_bench.benchable_graph import BenchableGraph
 import rdflib
 
 
@@ -14,7 +14,7 @@ class TestVirtuoso:
     def test_fail_connect_query(self):
         """Test that the store should not connect if the query endpoint is wrong."""
         bad_query_endpoint = 'http://should_fail/'
-        virtuoso = BenchableStore("SPARQLUpdateStore",
+        virtuoso = BenchableGraph("SPARQLUpdateStore",
                                   EMPTY_STORE['store_id'],
                                   (bad_query_endpoint, EMPTY_STORE['config'][1]),
                                   store_create=False)
@@ -30,7 +30,7 @@ class TestVirtuoso:
     def test_fail_connect_update(self):
         """Test that the store should not connect if the update endpoint is wrong."""
         bad_update_endpoint = 'http://should_fail'
-        virtuoso = BenchableStore('SPARQLUpdateStore',
+        virtuoso = BenchableGraph('SPARQLUpdateStore',
                                   EMPTY_STORE['store_id'],
                                   (EMPTY_STORE['config'][0], bad_update_endpoint),
                                   store_create=False)
@@ -48,7 +48,7 @@ class TestVirtuoso:
 
     def test_succeed_connect(self):
         """Test if the server is up."""
-        virtuoso = BenchableStore('SPARQLUpdateStore',
+        virtuoso = BenchableGraph('SPARQLUpdateStore',
                                   EMPTY_STORE['store_id'],
                                   EMPTY_STORE['config'],
                                   store_create=False)
@@ -63,7 +63,7 @@ class TestVirtuoso:
     @pytest.fixture(scope='module')
     def non_empty_benchable_store(self, request):
         graph_id = 'http://localhost/bs/virtuoso/test/%s' % uuid1()
-        virtuoso = BenchableStore('SPARQLUpdateStore',
+        virtuoso = BenchableGraph('SPARQLUpdateStore',
                                   graph_id,
                                   ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/"),
                                   store_create=False)
@@ -87,7 +87,7 @@ class TestVirtuoso:
     def test_destroy(self, non_empty_benchable_store):
         """Empty a graph, there should be not a single triple in the store after destroy()"""
         # Remove all triples from the store
-        non_empty_benchable_store.destroy()
+        non_empty_benchable_store.clear()
 
         triple_count = len(non_empty_benchable_store.graph)
         assert triple_count == 0
