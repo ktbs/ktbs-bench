@@ -17,7 +17,7 @@ class TestVirtuoso:
         virtuoso = BenchableGraph("SPARQLUpdateStore",
                                   EMPTY_STORE['store_id'],
                                   (bad_query_endpoint, EMPTY_STORE['config'][1]),
-                                  store_create=False)
+                                  graph_create=False)
         fail = False
         try:
             virtuoso.connect()
@@ -33,7 +33,7 @@ class TestVirtuoso:
         virtuoso = BenchableGraph('SPARQLUpdateStore',
                                   EMPTY_STORE['store_id'],
                                   (EMPTY_STORE['config'][0], bad_update_endpoint),
-                                  store_create=False)
+                                  graph_create=False)
         fail = False
         triple = (rdflib.URIRef('s'), rdflib.URIRef('p'), rdflib.URIRef('o'))
         try:
@@ -51,7 +51,7 @@ class TestVirtuoso:
         virtuoso = BenchableGraph('SPARQLUpdateStore',
                                   EMPTY_STORE['store_id'],
                                   EMPTY_STORE['config'],
-                                  store_create=False)
+                                  graph_create=False)
         succeed = True
         try:
             virtuoso.connect()
@@ -66,7 +66,7 @@ class TestVirtuoso:
         virtuoso = BenchableGraph('SPARQLUpdateStore',
                                   graph_id,
                                   ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/"),
-                                  store_create=False)
+                                  graph_create=False)
         virtuoso.connect()
 
         # Put some triples in the graph

@@ -11,6 +11,6 @@ def test_connect_existing_pg():
     postgres = BenchableGraph("SQLAlchemy",
                               CREATED_STORE['store_id'],
                               CREATED_STORE['config'],
-                              store_create=False)
+                              graph_create=False)
     assert postgres.connect() == rdflib.store.VALID_STORE
     postgres.close()
