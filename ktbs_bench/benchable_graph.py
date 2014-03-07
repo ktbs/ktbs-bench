@@ -10,24 +10,16 @@ class BenchableGraph:
     Provides a convenient way to use a graph for benchmarks.
 
     """
-
     def __init__(self, store, graph_id, store_config, graph_create=False):
         """
-        Parameters
-        ----------
-        store : str
-            Type of store to use.
-
-        Members
-        -------
-        graph : rdflib.Graph
-            The graph we are using.
-        _graph_id : str
-            The graph identifier.
-        _store_config : str or tuple of str
-            Configuration to open the store.
-        _graph_create : bool
-            True to create the graph upon connecting.
+        :param store: Type of store to use.
+        :type store: str
+        :param graph_id: The graph identifier.
+        :type graph_id: str
+        :param store_config: Configuration to open the store.
+        :type store_config: str, tuple
+        :param graph_create: True to create the graph upon connecting.
+        :type graph_create: bool
         """
         self.graph = Graph(store=store, identifier=graph_id)
         self._graph_id = graph_id
@@ -39,19 +31,17 @@ class BenchableGraph:
 
         For some configurations, the connection is postponed until needed
         (e.g. when doing a graph.query() or graph.add()).
-        This behaviour is part of RDFLib.
+        This behaviour comes from RDFLib implementation of graph.open().
         """
         return self.graph.open(configuration=self._store_config, create=self._graph_create)
 
     def close(self, commit_pending_transaction=True):
         """Close a connection to a store.
 
-        Parameters
-        ----------
-        commit_pending_transaction : bool
-            True if we want to commit pending transaction before closing, False otherwise.
+        :param commit_pending_transaction: True if to commit pending transaction before closing, False otherwise.
+        :type commit_pending_transaction: bool
 
-        Note (2014-03-07):
+        .. note::
             The graph.close() method is not implemented for SPARQL Store in RDFLib
         """
         self.graph.close(commit_pending_transaction=commit_pending_transaction)
