@@ -5,24 +5,76 @@ import logging
 from ktbs_bench.utils.decorators import bench as util_bench
 
 
-class BenchManager:
+class BenchManager(object):
+    """
+    Manage benchmarks by timing function against different contexts.
+
+    General concept
+    ===============
+    A BenchManager is instantiated in order to collect functions
+    to benchmark, like so:
+    >>> my_bench_manager = BenchManager()
+
+    In order to add functions to bench, one flag them for bench
+    by using the :meth:`bench` decorator. For example:
+    >>> @my_bench_manager.bench
+    ... def add_one(n):
+    ...     return n + 1
+
+    Each flagged function is then called against contexts.
+    A context is a function with optional setup and teardown, and it
+    must *yield* the parameter that benchmarked functions need.
+    >>> @my_bench_manager.context
+    ... def three():
+    ...     # optional setup
+    ...     try:
+    ...        # yield the parameter
+    ...        yield 3
+    ...     finally:
+    ...        # optional teardown
+    ...        pass
+
+    Finally, to perform the benchmarks, one must call:
+    >>> my_bench_manager.run('/tmp/my_results.csv')
+
+    The result of the two examples above is to time ``add_one(3)``.
+
+    Technical details
+    =================
+    Each context is stored in the list :attr:`_contexts`.
+    Each function to benchmark is stored in the list :attr:`_bench_funcs`.
+
+    When :meth:`run` is called, it will iterate over functions and contexts
+    to call each function against each context.
+    """
+
     def __init__(self):
         self._contexts = []
         self._bench_funcs = []
         self._results = {}
 
     def bench(self, func):
-        """Prepare a function to be benched and add it to the list to be run later."""
+        """Prepare a function to be benched and add it to the list to be run later.
+
+        :param function func: the function to bench
+        """
         func = util_bench(func)
         self._bench_funcs.append(func)
 
     def context(self, func):
-        """Decorate a function to act as a context."""
+        """Decorate a function to act as a context.
+
+        :param function func: the function that describes the context
+        """
         func = contextmanager(func)
         self._contexts.append(func)
 
     def run(self, output_filename, show_log=False):
-        """Execute each collected function against each context."""
+        """Execute each collected function against each context.
+
+        :param str output_filename: filename of the CSV output
+        :param bool show_log: True to display log during the run, False otherwise
+        """
         # Run the bench for each function against each context
         if show_log:
             logging.getLogger().setLevel(logging.INFO)
