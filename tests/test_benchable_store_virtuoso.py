@@ -10,7 +10,7 @@ EMPTY_STORE = {'store_id': 'http://localhost/bs/virtuoso/test/empty_store/',
                'config': ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")}
 
 
-class TestVirtuoso:
+class TestVirtuoso(object):
     def test_fail_connect_query(self):
         """Test that the store should not connect if the query endpoint is wrong."""
         bad_query_endpoint = 'http://should_fail/'
