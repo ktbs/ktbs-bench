@@ -12,17 +12,11 @@ class BenchableGraph(object):
     """
     def __init__(self, store, graph_id, store_config, graph_create=False):
         """
-        :param store: Type of store to use.
-        :type store: str
-
-        :param graph_id: The graph identifier.
-        :type graph_id: str
-
+        :param str store: Type of store to use.
+        :param str graph_id: The graph identifier.
         :param store_config: Configuration to open the store.
-        :type store_config: str, tuple
-
-        :param graph_create: True to create the graph upon connecting.
-        :type graph_create: bool
+        :type store_config: str or tuple
+        :param bool graph_create: True to create the graph upon connecting.
         """
         self.graph = Graph(store=store, identifier=graph_id)
         self._graph_id = graph_id
@@ -41,8 +35,7 @@ class BenchableGraph(object):
     def close(self, commit_pending_transaction=True):
         """Close a connection to a store.
 
-        :param commit_pending_transaction: True if to commit pending transaction before closing, False otherwise.
-        :type commit_pending_transaction: bool
+        :param bool commit_pending_transaction: True if to commit pending transaction before closing, False otherwise.
 
         .. note::
             The graph.close() method is not implemented for SPARQL Store in RDFLib

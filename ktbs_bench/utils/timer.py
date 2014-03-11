@@ -23,8 +23,7 @@ class Timer(object):
 
     def __init__(self, tick_now=True):
         """
-        :param tick_now: True to start the timer on class instantiation.
-        :type tick_now: bool
+        :param bool tick_now: True to start the timer on class instantiation.
         """
         self.start_time = []
         if tick_now:

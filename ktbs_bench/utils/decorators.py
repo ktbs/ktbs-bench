@@ -7,9 +7,7 @@ from timer import Timer
 def bench(f):
     """Decorator to time a function.
 
-    :param f: The function to benchmark.
-    :type f: function
-
+    :param function f: The function to benchmark.
     :returns: call_signature and real time taken to execute the function, in second.
     :rtype: tuple
 
@@ -45,15 +43,9 @@ def bench(f):
 def call_signature(f, *args, **kwargs):
     """Return a string representation of a function call.
 
-    :param f: The function to get the call signature from.
-    :type f: function
-
-    :param args: List of arguments.
-    :type args: list
-
-    :param kwargs: Dictionary of argument names and values.
-    :type kwargs: dict
-
+    :param function f: The function to get the call signature from.
+    :param list args: List of arguments.
+    :param dict kwargs: Dictionary of argument names and values.
     :return: representation of a function call.
     :rtype: str
 
