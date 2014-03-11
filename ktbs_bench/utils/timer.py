@@ -7,8 +7,8 @@ class Timer(object):
     """
     Measure process duration.
 
-    The timer is a little object that must be started and stopped to compute
-    delta times.
+    The timer is a little object that is started and stopped
+    to compute delta times.
 
     Examples:
     >>> from time import sleep
@@ -25,11 +25,11 @@ class Timer(object):
         """
         :param bool tick_now: True to start the timer on class instantiation.
         """
-        self.start_time = []
+        self.start_time = None
         if tick_now:
             self.start_time = self.tick()
-        self.stop_time = {}
-        self.delta = {}
+        self.stop_time = None
+        self.delta = None
 
     @staticmethod
     def tick():
@@ -53,8 +53,9 @@ class Timer(object):
             self.start_time = self.tick()
 
     def stop(self):
-        """Stop the timer and compute delta time."""
+        """Stop the timer and compute delta times."""
         self.stop_time = self.tick()
+        self.delta = {}
         for time_type in self.start_time.keys():
             self.delta[time_type] = self.stop_time[time_type] - self.start_time[time_type]
 
