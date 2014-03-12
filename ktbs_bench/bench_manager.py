@@ -47,7 +47,6 @@ class BenchManager(object):
     When :meth:`run` is called, it will iterate over functions and contexts
     to call each function against each context.
     """
-
     def __init__(self):
         self._contexts = []
         self._bench_funcs = []
