@@ -17,11 +17,14 @@ def concat_data(file_list):
     return pd.concat(df_list)
 
 
-if __name__ == '__main__':
-    dirs = {1: '../bench_results/raw/selected_1graph/',
-            5: '../bench_results/raw/selected_5graph/',
-            10: '../bench_results/raw/selected_10graph/'}
+def get_means(dirs, write_csv=True):
+    """Return the means for each directory that contain several time measures.
 
+    :param dict dirs: directories to look into, {number_of_things : path}
+    :param bool write_csv: True to output mean and std in CSV files, False otherwise
+    :returns means: means for each thing
+    :rtype: dict
+    """
     means = {k: None for k in dirs.keys()}
 
     # Get the means for all runs
@@ -33,9 +36,25 @@ if __name__ == '__main__':
         big_df = concat_data(abs_files)
         mean = big_df.groupby(big_df.index).mean()
         means[n_graph] = mean
-        mean.to_csv(path.join(csv_dir, 'mean.csv'))  # outputs mean
 
-        big_df.groupby(big_df.index).std().to_csv(path.join(csv_dir, 'std.csv'))  # outputs standard deviation
+        if write_csv:
+            mean.to_csv(path.join(csv_dir, 'mean.csv'))  # outputs mean
+            big_df.groupby(big_df.index).std().to_csv(path.join(csv_dir, 'std.csv'))  # outputs standard deviation
+
+    return means
+
+
+if __name__ == '__main__':
+    dirs_graph = {1: '../bench_results/raw/selected_1graph/',
+                  5: '../bench_results/raw/selected_5graph/',
+                  10: '../bench_results/raw/selected_10graph/',
+                  50: '../bench_results/raw/selected_50graph/', }
+    dirs_triples = {32000: '../bench_results/raw/many_graph_32000/',
+                    256000: '../bench_results/raw/many_graph_256000/',
+                    1000000: '../bench_results/raw/many_graph_1M/'}
+
+    dirs = dirs_triples
+    means = get_means(dirs, write_csv=False)
 
     # Build a dataframe per store
     first_mean_df = means.values()[0]
