@@ -69,33 +69,40 @@ class BenchManager(object):
         func = contextmanager(func)
         self._contexts.append(func)
 
-    def run(self, output_filename, show_log=False):
-        """Execute each collected function against each context.
+    def run(self, output_filename, show_log_info=False):
+        """Benchmark functions against contexts.
 
         :param str output_filename: filename of the CSV output
-        :param bool show_log: True to display log during the run, False otherwise
+        :param bool show_log_info: True to display log during the run, False otherwise
         """
-        # Run the bench for each function against each context
-        if show_log:
+        if show_log_info:
             logging.getLogger().setLevel(logging.INFO)
+
+        # Run the bench for each function against each context
         for func in self._bench_funcs:
             self._results[func.__name__] = {}
-            if show_log:
-                logging.info('Func: %s' % func.__name__)
             for context in self._contexts:
-                if show_log:
-                    logging.info('with context: %s' % context.__name__)
-                with context() as arg:
+                with context() as arg:  # catch what the context yield
                     if not isinstance(arg, tuple):
-                        arg = tuple([arg])  # Make arg a tuple of one element
-                    _, res_time = func(*arg)
-                if show_log:
-                    logging.info('res time: %s' % res_time)
+                        arg = tuple([arg])  # make arg a tuple of one element
+                    _, res_time = func(*arg)  # call func with what the context yielded
+                logging.info('Benchmarking function %s with context %s: %s s' %
+                             (func.__name__, context.__name__, res_time))
                 self._results[func.__name__][context.__name__] = res_time
 
         # Write output to a CSV file
+        self.write_output(output_filename)
+
+    def write_output(self, output_filename):
+        """Write results of the BenchManager to a nicely formatted CSV file.
+
+        :param str output_filename: filename of the CSV output
+        """
+        # Get column names
         fieldnames = ['func_name']
         fieldnames += [context.__name__ for context in self._contexts]
+
+        # Create the CSV with header and results
         with open(output_filename, 'wb') as output_file:
             csv_file = DictWriter(output_file, fieldnames)
             csv_file.writeheader()
