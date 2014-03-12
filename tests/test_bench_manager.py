@@ -50,12 +50,20 @@ class TestBenchManager(object):
         bm = BenchManager()
 
         @bm.context
-        def my_context():
+        def first_context():
             print('before bench')
             try:
                 yield 123
             finally:
                 print('after bench')
+
+        @bm.context
+        def second_context():
+            print('second context begin')
+            try:
+                yield 0
+            finally:
+                pass
 
         @bm.bench
         def first_bench(n):
@@ -68,7 +76,7 @@ class TestBenchManager(object):
         return bm
 
     def test_run_fd_output(self, simple_bm, tmpdir, capfd):
-        tmp_file = str(tmpdir.join('res_bench_manager_run_fd_output'))
+        tmp_file = '/tmp/none'  # str(tmpdir.join('res_bench_manager_run_fd_output'))
         simple_bm.run(tmp_file)
 
         # Test output
@@ -76,9 +84,14 @@ class TestBenchManager(object):
         expected_res = u'before bench\n'
         expected_res += u'first bench 123\n'
         expected_res += u'after bench\n'
+        expected_res += u'second context begin\n'
+        expected_res += u'first bench 0\n'
         expected_res += u'before bench\n'
         expected_res += u'second bench 123\n'
         expected_res += u'after bench\n'
+        expected_res += u'second context begin\n'
+        expected_res += u'second bench 0\n'
+
         assert out == expected_res
 
     def test_run_file_output(self, simple_bm, tmpdir):
@@ -89,4 +102,29 @@ class TestBenchManager(object):
         with open(tmp_file, 'r') as csv_out:
             lines = csv_out.readlines()
 
-        pass
+        # Check header
+        header = lines[0].split(',')
+        assert header[0] == 'func_name'
+        assert {context.strip() for context in header[1:]} == {'first_context', 'second_context'}
+
+        # Check bench function names
+        function_names = set()
+        for line in lines[1:]:
+            first_el = line.split(',')[0].strip()  # get the first element of each line, except header
+            function_names.add(first_el)
+        assert function_names == {'first_bench', 'second_bench'}
+
+        # Check result types
+        for line in lines[1:]:
+            elements = [el.strip() for el in line.split(',')[1:]]
+            for el in elements:
+                assert TestBenchManager.isfloat(el)
+
+    @staticmethod
+    def isfloat(string):
+        """Return True if string represents a float, False otherwise."""
+        try:
+            float(string)
+            return True
+        except ValueError:
+            return False
