@@ -34,7 +34,7 @@ def bench(f):
         f(*args, **kwargs)
         timer.stop()
 
-        res = [call_sig, timer.get_times()['real']]
+        res = (call_sig, timer.get_times()['real'])
         return res
 
     return wrapped
