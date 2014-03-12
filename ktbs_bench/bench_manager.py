@@ -46,11 +46,19 @@ class BenchManager(object):
 
     When :meth:`run` is called, it will iterate over functions and contexts
     to call each function against each context.
+
+    Attributes
+    ==========
+    :ivar list _contexts: contexts to apply
+    :ivar list _bench_funcs: functions to benchmark
+    :ivar dict _results: collected benchmark results
+    :ivar _logger: logger
     """
     def __init__(self):
         self._contexts = []
         self._bench_funcs = []
         self._results = {}
+        self._logger = logging.getLogger(__name__)
 
     def bench(self, func):
         """Prepare a function to be benched and add it to the list to be run later.
@@ -75,7 +83,7 @@ class BenchManager(object):
         :param bool show_log_info: True to display log during the run, False otherwise
         """
         if show_log_info:
-            logging.getLogger().setLevel(logging.INFO)
+            self._logger.setLevel(logging.INFO)
 
         # Run the bench for each function against each context
         for func in self._bench_funcs:
@@ -85,12 +93,13 @@ class BenchManager(object):
                     if not isinstance(arg, tuple):
                         arg = tuple([arg])  # make arg a tuple of one element
                     _, res_time = func(*arg)  # call func with what the context yielded
-                logging.info('Benchmarking function %s with context %s: %s s' %
-                             (func.__name__, context.__name__, res_time))
+                self._logger.info('Benchmarking function %s with context %s: %s s' %
+                                  (func.__name__, context.__name__, res_time))
                 self._results[func.__name__][context.__name__] = res_time
 
         # Write output to a CSV file
         self.write_output(output_filename)
+        self._logger.info('Benchmarks completed.')
 
     def write_output(self, output_filename):
         """Write results of the BenchManager to a nicely formatted CSV file.
