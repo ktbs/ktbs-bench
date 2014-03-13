@@ -1,6 +1,7 @@
 from os import listdir, path
 import pandas as pd
 from matplotlib import pyplot as plt
+from numpy import linspace
 
 
 def get_files(directory, file_extension):
@@ -89,6 +90,10 @@ def display_figure(data):
     fig = plt.figure()
     n_subplots = len(data)
     lines, labels = [], []
+    colormap = plt.get_cmap('Set1')
+    queries = data.values()[0].columns
+    color_list = [colormap(i) for i in linspace(0, 1, len(queries))]
+    plt.rc('axes', color_cycle=color_list)
     for ind_subplot, store_name in enumerate(data):
         ax = plt.subplot(1, n_subplots, ind_subplot)
         ax.set_xlim(min(dirs.keys()) - 1, max(dirs.keys()) + 1)
