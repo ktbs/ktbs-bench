@@ -97,8 +97,11 @@ def display_figure(data):
     for ind_subplot, store_name in enumerate(data):
         ax = plt.subplot(1, n_subplots, ind_subplot)
         ax.set_xlim(min(dirs.keys()) - 1, max(dirs.keys()) + 1)
+        # ax.set_yscale('log')
+        plt.grid(True)
         df = data[store_name]
-        plot_lines = plt.plot(df.index, df, 'o')
+        df = df.reindex_axis(sorted(df.index), axis=0)  # sort the index (ie. nthings)
+        plot_lines = plt.plot(df.index, df, '-', lw=2)
         if ind_subplot == 0:
             lines += plot_lines
             labels += df.columns.values.tolist()
