@@ -46,7 +46,18 @@ def get_means(dirs, write_csv=True):
     return means
 
 
-def df_nthings_query(means):
+def transform_df(means):
+    """Change representation of dataframes.
+
+    Means is a dictionnary with nthings as keys, and DataFrame as values.
+    Each DataFrame as store name for columns and query for index.
+    This function transforms to a dictionnary with store name as keys,
+    DataFrame as values. Where DataFrame columns are query and index are nthings.
+
+    :param dict means: dataframes with store name / query for each nthings
+    :return: dataframes with query / nthings for each store name
+    :rtype: dict
+    """
     # Build a dataframe for each store
     first_mean_df = means.values()[0]  # get a dataframe to have context and function names
     store_names = set(first_mean_df.columns)  # populate before we do any intersection, otherwise it's always empty
@@ -68,7 +79,13 @@ def df_nthings_query(means):
 
 
 def display_figure(data):
-    print('displaying figure')
+    """Plot query times as function of nthings for each store.
+
+    Data must be a dictionnary with store names as keys and dataframes as values.
+    Dataframes must have query names as columns and nthings as index.
+
+    :param dict data: well formatted data
+    """
     fig = plt.figure()
     n_subplots = len(data)
     lines, labels = [], []
@@ -82,6 +99,7 @@ def display_figure(data):
             labels += df.columns.values.tolist()
         plt.title(store_name)
     fig.legend(lines, labels, loc='upper right')
+    print('displaying figure')
     plt.show()
 
 
@@ -95,8 +113,7 @@ if __name__ == '__main__':
                     256000: '../bench_results/raw/many_graph_256000/',
                     1000000: '../bench_results/raw/many_graph_1M/'}
 
-    dirs = dirs_triples
+    dirs = dirs_graph
     means = get_means(dirs, write_csv=False)
-    all_store_query = df_nthings_query(means)
+    all_store_query = transform_df(means)
     display_figure(all_store_query)
-
