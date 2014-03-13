@@ -1,6 +1,6 @@
 import logging
 
-from ktbs_bench import benchable_store as bs
+from ktbs_bench import benchable_graph as bg
 import psycopg2 as pg
 
 
@@ -20,13 +20,13 @@ def pg_create(db_name, db_user):
 
 
 def get_postgres(db_name, graph_id):
-    postgres_store = bs.BenchableStore(store="SQLAlchemy", graph_id=graph_id,
+    postgres_store = bg.BenchableGraph(store="SQLAlchemy", graph_id=graph_id,
                                        store_config='postgresql+psycopg2://localhost/%s' % db_name,
-                                       store_create=True)
+                                       graph_create=True)
     return postgres_store
 
 
 def get_sleepycat(db_path, graph_id):
-    sleepycat = bs.BenchableStore(store='Sleepycat', graph_id=graph_id,
-                                  store_config=db_path, store_create=True)
+    sleepycat = bg.BenchableGraph(store='Sleepycat', graph_id=graph_id,
+                                  store_config=db_path, graph_create=True)
     return sleepycat

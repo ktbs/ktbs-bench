@@ -6,7 +6,7 @@ import nosparqlstore
 import rdflib
 
 N_RUN = 20
-MAX_GRAPH = 50
+MAX_GRAPH = 1
 bmgr = BenchManager()
 
 
@@ -17,14 +17,13 @@ def get_rand_graph(graph_prefix, max_graph):
 # Making the store contexts
 @bmgr.context
 def virtuoso():
-    rand_graph_id = get_rand_graph('http://localhost/bench/virtuoso/multiple_graph/', MAX_GRAPH)
     bs_virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/",
-                                              identifier=rand_graph_id)
+                                              identifier='http://localhost/bench/virtuoso/graph1M/')
     try:
         # The stuff we want to do before executing the bench function
         bs_virtuoso.connect()
         n_triples = len(bs_virtuoso.graph)
-        assert 32000 < n_triples < 33000
+        assert 1024000 < n_triples < 1025000
         # Yield the object the bench function needs
         yield bs_virtuoso.graph
     finally:
@@ -41,7 +40,7 @@ def jena():
     try:
         bs_jena.connect()
         n_triples = len(bs_jena.graph)
-        assert 32000 < n_triples < 33000
+        assert 1024000 < n_triples < 1025000
         yield bs_jena.graph
     finally:
         bs_jena.close()
@@ -66,26 +65,25 @@ def _4store():
 
 @bmgr.context
 def postgres():
-    rand_graph_id = get_rand_graph('http://localhost/bench/postgres/multiple_graph/', MAX_GRAPH)
-    bs_postgres = nosparqlstore.get_postgres('persistent_store', rand_graph_id)
+    bs_postgres = nosparqlstore.get_postgres('many_graph', 'http://localhost/bench/postgres/graph1M/')
     try:
         bs_postgres.connect()
         n_triples = len(bs_postgres.graph)
-        assert 32000 < n_triples < 33000
+        assert 1024000 < n_triples < 1025000
         yield bs_postgres.graph
     finally:
         bs_postgres.close()
     del bs_postgres
 
 
-@bmgr.context
+#@bmgr.context
 def sleepycat():
-    rand_graph_id = get_rand_graph('http://localhost/bench/sleepycat/multiple_graph/', MAX_GRAPH)
-    bs_sleepycat = nosparqlstore.get_sleepycat('../sleepycat_db', rand_graph_id)
+    bs_sleepycat = nosparqlstore.get_sleepycat('../sleepycat_many_graph_1M_db',
+                                               'http://localhost/bench/sleepycat/graph1M/')
     try:
         bs_sleepycat.connect()
         n_triples = len(bs_sleepycat.graph)
-        assert 32000 < n_triples < 33000
+        assert 1024000 < n_triples < 1025000
         yield bs_sleepycat.graph
     finally:
         bs_sleepycat.close()
@@ -136,7 +134,7 @@ def query_sp2b_q1(graph):
         }""")
 
 
-@bmgr.bench
+# @bmgr.bench
 def query_sp2b_q2(graph):
     """
     This query implements a bushy graph pattern. It contains
@@ -558,21 +556,22 @@ if __name__ == '__main__':
     rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
     backends = {'pg': {'store': 'SQLAlchemy',
                        'id_sub': 'postgres',
-                       'open': 'postgresql+psycopg2://localhost/persistent_store'},
-                'sleepy': {'store': 'Sleepycat',
-                           'id_sub': 'sleepycat',
-                           'open': '../sleepycat_db'},
+                       'open': 'postgresql+psycopg2://localhost/many_graph'},
+                # 'sleepy': {'store': 'Sleepycat',
+                #            'id_sub': 'sleepycat',
+                #            'open': '../sleepycat_many_graph_1M_db'},
                 'virtuoso': {'store': 'BN',
                              'id_sub': 'virtuoso',
                              'open': ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")}}
-    for i in xrange(MAX_GRAPH):
+    for i in xrange(1, 2):
         for b in backends:
             g = rdflib.Graph(backends[b]['store'],
-                             identifier='http://localhost/bench/%s/multiple_graph/%s/' % (backends[b]['id_sub'], i))
+                             identifier='http://localhost/bench/%s/graph1M/' % (backends[b]['id_sub'], ))
             g.open(backends[b]['open'], create=False)
-            assert 32000 < len(g) < 33000
+            assert 1024000 < len(g) < 1025000
+            print('backend %s checked for graph %s' % (b, i))
             g.close()
 
     # Run the benchs
-    for ind_run in xrange(6, N_RUN):
-        bmgr.run('../bench_results/raw/selected_10graph/res_queries_32000_%s.csv' % ind_run, show_log=True)
+    for ind_run in xrange(N_RUN):
+        bmgr.run('../bench_results/raw/many_graph_1M/res_queries_1M_%s.csv' % (ind_run,), show_log_info=True)
