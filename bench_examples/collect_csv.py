@@ -1,7 +1,11 @@
+import logging
+
 from os import listdir, path
 import pandas as pd
 from matplotlib import pyplot as plt
 from numpy import linspace
+
+logging.getLogger(__name__)
 
 
 def get_files(directory, file_extension):
@@ -62,8 +66,6 @@ def transform_df(means):
     # Build a dataframe for each store
     first_mean_df = means.values()[0]  # get a dataframe to have context and function names
     store_names = set(first_mean_df.columns)  # populate before we do any intersection, otherwise it's always empty
-    for dataframe in means.values():
-        store_names.intersection_update(dataframe.columns)
 
     all_store_query = {}
     # Put empty dataframes in dict with store names as keys
@@ -74,7 +76,10 @@ def transform_df(means):
     for n_graph, mean_df in means.items():
         for store_name in store_names:
             for func_name in mean_df.index:
-                all_store_query[store_name][func_name][n_graph] = means[n_graph][store_name][func_name]
+                try:
+                    all_store_query[store_name][func_name][n_graph] = means[n_graph][store_name][func_name]
+                except KeyError, e:
+                    logging.warning("Cannot put this value in the dataframe: %s" % e)
 
     return all_store_query
 
@@ -121,7 +126,7 @@ if __name__ == '__main__':
                     256000: '../bench_results/raw/many_graph_256000/',
                     1000000: '../bench_results/raw/many_graph_1M/'}
 
-    dirs = dirs_graph
+    dirs = dirs_triples
     means = get_means(dirs, write_csv=False)
     all_store_query = transform_df(means)
     display_figure(all_store_query)
