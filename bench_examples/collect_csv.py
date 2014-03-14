@@ -5,8 +5,6 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from numpy import linspace
 
-logging.getLogger(__name__)
-
 
 def get_files(directory, file_extension):
     """Get a list of filenames with a specific extension."""
@@ -99,17 +97,23 @@ def display_figure(data):
     queries = data.values()[0].columns
     color_list = [colormap(i) for i in linspace(0, 1, len(queries))]
     plt.rc('axes', color_cycle=color_list)
+    labels_done = False
     for ind_subplot, store_name in enumerate(data):
         ax = plt.subplot(1, n_subplots, ind_subplot)
         ax.set_xlim(min(dirs.keys()) - 1, max(dirs.keys()) + 1)
-        # ax.set_yscale('log')
+        ax.set_yscale('log')
         plt.grid(True)
         df = data[store_name]
         df = df.reindex_axis(sorted(df.index), axis=0)  # sort the index (ie. nthings)
-        plot_lines = plt.plot(df.index, df, '-', lw=2)
-        if ind_subplot == 0:
-            lines += plot_lines
-            labels += df.columns.values.tolist()
+        df.dropna(how='all', inplace=True)  # delete index with no values
+        if len(df.index) > 1:
+            plot_lines = plt.plot(df.index, df, '-', lw=2)
+            if not labels_done:
+                labels_done = True
+                lines += plot_lines
+                labels += df.columns.values.tolist()
+        else:
+            plt.scatter(df.index.values.tolist() * len(df.columns), df, c=color_list, s=75)
         plt.title(store_name)
     fig.legend(lines, labels, loc='upper right')
     print('displaying figure')
