@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from csv import DictWriter
 import logging
 
-from ktbs_bench.utils.decorators import bench as util_bench
+from sutils.decbench import bench as util_bench
 
 
 class BenchManager(object):
@@ -65,7 +65,7 @@ class BenchManager(object):
 
         :param function func: the function to bench
         """
-        func = util_bench(func)
+        func = util_bench(func)  # decorate the function named func
         self._bench_funcs.append(func)
 
     def context(self, func):
@@ -92,7 +92,7 @@ class BenchManager(object):
                 with context() as arg:  # catch what the context yield
                     if not isinstance(arg, tuple):
                         arg = tuple([arg])  # make arg a tuple of one element
-                    _, res_time = func(*arg)  # call func with what the context yielded
+                    res_time, _ = func(*arg)  # call func with what the context yielded
                 self._logger.info('Benchmarking function %s with context %s: %s s' %
                                   (func.__name__, context.__name__, res_time))
                 self._results[func.__name__][context.__name__] = res_time
