@@ -5,25 +5,45 @@ import sparqlstore
 import nosparqlstore
 import rdflib
 
+
+rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
+VIRT = {'store': 'BN',
+        'id_sub': 'virtuoso',
+        'open': ('http://localhost:8890/sparql/', 'http://localhost:8890/sparql/')}
+
+PG = {'store': 'SQLAlchemy',
+      'id_sub': 'postgres',
+      'open': 'postgresql+psycopg2://localhost/many_graph'}
+
+SLEEPY = {'store': 'Sleepycat',
+          'id_sub': 'sleepy',
+          'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_graph_32k'}
+
+BACKENDS = {'sleepy': SLEEPY}
+
+
 N_RUN = 20
 MAX_GRAPH = 1
+MIN_TRIPLES = 32000
+MAX_TRIPLES = 33000
+BENCH_NAME = 'many_graph_32k'
 bmgr = BenchManager()
 
 
 def get_rand_graph(graph_prefix, max_graph):
-    return graph_prefix + str(randint(0, max_graph - 1)) + '/'
+    return graph_prefix + str(randint(0, max_graph - 1))
 
 
 # Making the store contexts
-@bmgr.context
+# @bmgr.context
 def virtuoso():
-    bs_virtuoso = sparqlstore.get_sparqlstore("http://localhost:8890/sparql/", "http://localhost:8890/sparql/",
-                                              identifier='http://localhost/bench/virtuoso/graph1M/')
+    bs_virtuoso = sparqlstore.get_sparqlstore(VIRT['open'][0], VIRT['open'][1],
+                                              identifier='http://localhost/bench/virtuoso/%s/' % BENCH_NAME)
     try:
         # The stuff we want to do before executing the bench function
         bs_virtuoso.connect()
         n_triples = len(bs_virtuoso.graph)
-        assert 1024000 < n_triples < 1025000
+        assert MIN_TRIPLES < n_triples < MAX_TRIPLES
         # Yield the object the bench function needs
         yield bs_virtuoso.graph
     finally:
@@ -33,75 +53,31 @@ def virtuoso():
 
 
 # @bmgr.context
-def jena():
-    rand_graph_id = get_rand_graph('http://localhost/bench/jena/multiple_graph/', MAX_GRAPH)
-    bs_jena = sparqlstore.get_sparqlstore('http://localhost:3030/ds/query', 'http://localhost:3030/ds/update',
-                                          identifier=rand_graph_id)
-    try:
-        bs_jena.connect()
-        n_triples = len(bs_jena.graph)
-        assert 1024000 < n_triples < 1025000
-        yield bs_jena.graph
-    finally:
-        bs_jena.close()
-    del bs_jena
-
-
-# @bmgr.context
-def _4store():
-    rand_graph_id = get_rand_graph('http://localhost/bench/4store/multiple_graph/', MAX_GRAPH)
-    bs_4store = sparqlstore.get_sparqlstore('http://localhost:8000/sparql/', 'http://localhost:8000/update/',
-                                            identifier=rand_graph_id)
-    try:
-        bs_4store.connect()
-        n_triples = len(bs_4store.graph)
-        # RDFLib count all the triples in the dataset for 4store, instead of the triples in the graph only.
-        assert MAX_GRAPH * 32000 < n_triples < MAX_GRAPH * 33000
-        yield bs_4store.graph
-    finally:
-        bs_4store.close()
-    del bs_4store
-
-
-@bmgr.context
 def postgres():
-    bs_postgres = nosparqlstore.get_postgres('many_graph', 'http://localhost/bench/postgres/graph1M/')
+    bs_postgres = nosparqlstore.get_postgres('many_graph', 'http://localhost/bench/postgres/%s/' % BENCH_NAME)
     try:
         bs_postgres.connect()
         n_triples = len(bs_postgres.graph)
-        assert 1024000 < n_triples < 1025000
+        assert MIN_TRIPLES < n_triples < MAX_TRIPLES
         yield bs_postgres.graph
     finally:
         bs_postgres.close()
     del bs_postgres
 
 
-#@bmgr.context
+@bmgr.context
 def sleepycat():
-    bs_sleepycat = nosparqlstore.get_sleepycat('../sleepycat_many_graph_1M_db',
-                                               'http://localhost/bench/sleepycat/graph1M/')
+    graph_prefix = 'http://localhost/bench/sleepy/%s/' % BENCH_NAME
+    bs_sleepycat = nosparqlstore.get_sleepycat(SLEEPY['open'],
+                                               get_rand_graph(graph_prefix, MAX_GRAPH))
     try:
         bs_sleepycat.connect()
         n_triples = len(bs_sleepycat.graph)
-        assert 1024000 < n_triples < 1025000
+        assert MIN_TRIPLES < n_triples < MAX_TRIPLES
         yield bs_sleepycat.graph
     finally:
         bs_sleepycat.close()
     del bs_sleepycat
-
-
-# @bmgr.context
-def memory():
-    rand_graph_id = get_rand_graph('http://localhost/bench/memory/multiple_graph/', MAX_GRAPH)
-    bs_memory = rdflib.Graph(identifier=rand_graph_id)
-    bs_memory.parse('../data/32000.n3', format='n3')
-    try:
-        n_triples = len(bs_memory)
-        assert 32000 < n_triples < 33000
-        yield bs_memory
-    finally:
-        bs_memory.close()
-    del bs_memory
 
 
 @bmgr.bench
@@ -482,7 +458,7 @@ def query_sp2b_q11(graph):
     """)
 
 
-@bmgr.bench
+# @bmgr.bench
 def query_sp2b_q12a(graph):
     """Return yes if a person occurs as author of at least one inproceeding and article, no otherwise.
     This query is the boolean counterpart of Q5a."""
@@ -552,26 +528,18 @@ def query_sp2b_q12c(graph):
 
 
 if __name__ == '__main__':
-    # First pass to check that every store the right amount of triples
-    rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
-    backends = {'pg': {'store': 'SQLAlchemy',
-                       'id_sub': 'postgres',
-                       'open': 'postgresql+psycopg2://localhost/many_graph'},
-                # 'sleepy': {'store': 'Sleepycat',
-                #            'id_sub': 'sleepycat',
-                #            'open': '../sleepycat_many_graph_1M_db'},
-                'virtuoso': {'store': 'BN',
-                             'id_sub': 'virtuoso',
-                             'open': ("http://localhost:8890/sparql/", "http://localhost:8890/sparql/")}}
-    for i in xrange(1, 2):
-        for b in backends:
-            g = rdflib.Graph(backends[b]['store'],
-                             identifier='http://localhost/bench/%s/graph1M/' % (backends[b]['id_sub'], ))
-            g.open(backends[b]['open'], create=False)
-            assert 1024000 < len(g) < 1025000
-            print('backend %s checked for graph %s' % (b, i))
+    # Check number of triples for each store before we do the benchs
+    for ind_graph in xrange(MAX_GRAPH):
+        for b in BACKENDS:
+            graph_id = 'http://localhost/bench/{store}/{bench}/{ind}'.format(store=BACKENDS[b]['id_sub'],
+                                                                             bench=BENCH_NAME,
+                                                                             ind=ind_graph)
+            g = rdflib.Graph(BACKENDS[b]['store'], identifier=graph_id)
+            g.open(BACKENDS[b]['open'], create=False)
+            assert MIN_TRIPLES < len(g) < MAX_TRIPLES
+            print('backend %s checked for graph %s' % (b, 1))
             g.close()
 
     # Run the benchs
     for ind_run in xrange(N_RUN):
-        bmgr.run('../bench_results/raw/many_graph_1M/res_queries_1M_%s.csv' % (ind_run,), show_log_info=True)
+        bmgr.run('/tmp/lala.csv', show_log_info=True)
