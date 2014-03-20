@@ -1,4 +1,5 @@
 from random import randint
+from sutils.decfork import fork
 
 from ktbs_bench.bench_manager import BenchManager
 import sparqlstore
@@ -19,9 +20,9 @@ SLEEPY = {'store': 'Sleepycat',
           'id_sub': 'sleepy',
           'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_graph_32k'}
 
-BACKENDS = {'sleepy': SLEEPY}
+CHECK_BACKENDS = {'sleepy': SLEEPY, 'virtuoso': VIRT}
 
-
+N_FORKS = 20
 N_RUN = 20
 MAX_GRAPH = 1
 MIN_TRIPLES = 32000
@@ -37,8 +38,9 @@ def get_rand_graph(graph_prefix, max_graph):
 # Making the store contexts
 # @bmgr.context
 def virtuoso():
+    graph_prefix = 'http://localhost/bench/virtuoso/%s/' % BENCH_NAME
     bs_virtuoso = sparqlstore.get_sparqlstore(VIRT['open'][0], VIRT['open'][1],
-                                              identifier='http://localhost/bench/virtuoso/%s/' % BENCH_NAME)
+                                              identifier=get_rand_graph(graph_prefix, MAX_GRAPH))
     try:
         # The stuff we want to do before executing the bench function
         bs_virtuoso.connect()
@@ -71,22 +73,23 @@ def sleepycat():
     bs_sleepycat = nosparqlstore.get_sleepycat(SLEEPY['open'],
                                                get_rand_graph(graph_prefix, MAX_GRAPH))
     try:
-        bs_sleepycat.connect()
-        n_triples = len(bs_sleepycat.graph)
-        assert MIN_TRIPLES < n_triples < MAX_TRIPLES
-        yield bs_sleepycat.graph
+        yield bs_sleepycat
     finally:
-        bs_sleepycat.close()
+        pass
     del bs_sleepycat
 
 
 @bmgr.bench
-def query_all(graph):
-    graph.query('select * where {?s ?p ?o}')
+@fork(n=N_FORKS)
+def query_all(benchable_graph):
+    benchable_graph.connect()
+    benchable_graph.graph.query('select * where {?s ?p ?o}')
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q1(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q1(benchable_graph):
     """Return the year of publication of "Journal 1 (1940)".
 
     This simple query returns exactly one result (for arbitrarily
@@ -95,7 +98,8 @@ def query_sp2b_q1(graph):
     i.e. execution time should be independent from document size.
     (From SP2BENCH Tech Report)
     """
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX dc:      <http://purl.org/dc/elements/1.1/>
         PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -108,10 +112,12 @@ def query_sp2b_q1(graph):
           ?journal dc:title "Journal 1 (1940)"^^xsd:string .
           ?journal dcterms:issued ?yr
         }""")
+    benchable_graph.close()
 
 
 # @bmgr.bench
-def query_sp2b_q2(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q2(benchable_graph):
     """
     This query implements a bushy graph pattern. It contains
     a single, simple OPTIONAL expression, and accesses large
@@ -121,7 +127,8 @@ def query_sp2b_q2(graph):
     evaluation times that are almost linear to the document size.
     (From SP2BENCH Tech Report)
     """
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX swrc:    <http://swrc.ontoware.org/ontology#>
@@ -147,10 +154,12 @@ def query_sp2b_q2(graph):
           }
         }
         ORDER BY ?yr""")
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q3a(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q3a(benchable_graph):
     """Select all articles with property swrc:pages
 
     This query tests FILTER expressions with varying selectivity.
@@ -163,7 +172,8 @@ def query_sp2b_q3a(graph):
     statistics might be used to answer Q3c in constant time.
     (From SP2BENCH Tech Report)
     """
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX bench: <http://localhost/vocabulary/bench/>
         PREFIX swrc:  <http://swrc.ontoware.org/ontology#>
@@ -174,12 +184,15 @@ def query_sp2b_q3a(graph):
           ?article ?property ?value
           FILTER (?property=swrc:pages)
         }""")
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q3b(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q3b(benchable_graph):
     """Select all articles with property swrc:month"""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX bench: <http://localhost/vocabulary/bench/>
         PREFIX swrc:  <http://swrc.ontoware.org/ontology#>
@@ -190,12 +203,15 @@ def query_sp2b_q3b(graph):
           ?article ?property ?value
           FILTER (?property=swrc:month)
         }""")
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q3c(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q3c(benchable_graph):
     """Select all articles with property swrc:isbn."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX swrc:  <http://swrc.ontoware.org/ontology#>
         PREFIX bench: <http://localhost/vocabulary/bench/>
@@ -206,10 +222,12 @@ def query_sp2b_q3c(graph):
           ?article ?property ?value
           FILTER (?property=swrc:isbn)
         }""")
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q4(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q4(benchable_graph):
     """
     Select all distinct pairs of article author names for authors
     that have published in the same journal.
@@ -225,7 +243,8 @@ def query_sp2b_q4(graph):
     We expect superlinear behavior, even for native engines.
     (From SP2BENCH Tech Report)
     """
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX bench:   <http://localhost/vocabulary/bench/>
         PREFIX dc:      <http://purl.org/dc/elements/1.1/>
@@ -245,13 +264,16 @@ def query_sp2b_q4(graph):
           ?article2 swrc:journal ?journal
           FILTER (?name1<?name2)
         }""")
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q5a(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q5a(benchable_graph):
     """Return the names of all persons that occur as author of at least one inproceeding
     and at least one article."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
         PREFIX bench: <http://localhost/vocabulary/bench/>
@@ -268,13 +290,16 @@ def query_sp2b_q5a(graph):
           FILTER (?name=?name2)
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q5b(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q5b(benchable_graph):
     """Return the names of all persons that occur as author of at least one inproceeding
     and at least one article (same as Q5a)."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
         PREFIX bench: <http://localhost/vocabulary/bench/>
@@ -289,13 +314,16 @@ def query_sp2b_q5b(graph):
           ?person foaf:name ?name
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q6(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q6(benchable_graph):
     """Return, for each year, the set of all publications authored by persons
     that have not published in years before."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
@@ -318,13 +346,16 @@ def query_sp2b_q6(graph):
           } FILTER (!bound(?author2))
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q7(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q7(benchable_graph):
     """Return the titles of all papers that have been cited at least once,
     but not by any paper that has not been cited itself."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX foaf:    <http://xmlns.com/foaf/0.1/>
@@ -352,13 +383,16 @@ def query_sp2b_q7(graph):
           } FILTER (!bound(?doc3))
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q8(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q8(benchable_graph):
     """Compute authors that have published with Paul Erdoes,
     or with an author that has published with Paul Erdoes."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -386,10 +420,12 @@ def query_sp2b_q8(graph):
           }
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q9(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q9(benchable_graph):
     """Return incoming and outgoing properties of persons.
 
     Q9 has been designed to test non-standard data access patterns.
@@ -410,7 +446,8 @@ def query_sp2b_q9(graph):
     the document, hence might scale linearly to document size.
     (From SP2BENCH Tech Report)
     """
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 
@@ -425,14 +462,17 @@ def query_sp2b_q9(graph):
           }
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q10(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q10(benchable_graph):
     """Return all subjects that stand in any relation to Paul Erdoes.
     In our scenario,the query might also be formulated as
     "Return publications and venues in which Paul Erdoes is involved either as author or as editor"."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX person: <http://localhost/persons/>
 
         SELECT ?subject ?predicate
@@ -440,12 +480,15 @@ def query_sp2b_q10(graph):
           ?subject ?predicate person:Paul_Erdoes
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q11(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q11(benchable_graph):
     """Return (up to) 10 electronic edition URLs starting from the 51th publication, in lexicographical order."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
         SELECT ?ee
@@ -456,13 +499,16 @@ def query_sp2b_q11(graph):
         LIMIT 10
         OFFSET 50
     """)
+    benchable_graph.close()
 
 
 # @bmgr.bench
-def query_sp2b_q12a(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q12a(benchable_graph):
     """Return yes if a person occurs as author of at least one inproceeding and article, no otherwise.
     This query is the boolean counterpart of Q5a."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf:  <http://xmlns.com/foaf/0.1/>
         PREFIX bench: <http://localhost/vocabulary/bench/>
@@ -478,13 +524,16 @@ def query_sp2b_q12a(graph):
           FILTER (?name1=?name2)
         }
     """)
+    benchable_graph.close()
 
 
 # @bmgr.bench
-def query_sp2b_q12b(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q12b(benchable_graph):
     """Return yes if an author has published with Paul Erdoes or with an author that has published with Paul Erdoes,
     and no otherwise. This query is the boolean counterpart of Q8. """
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
         PREFIX xsd:  <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -511,12 +560,15 @@ def query_sp2b_q12b(graph):
           }
         }
     """)
+    benchable_graph.close()
 
 
 @bmgr.bench
-def query_sp2b_q12c(graph):
+@fork(n=N_FORKS)
+def query_sp2b_q12c(benchable_graph):
     """Check if the person John Q Public exists in the database."""
-    graph.query("""
+    benchable_graph.connect()
+    benchable_graph.graph.query("""
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX person: <http://localhost/persons/>
     PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -525,21 +577,24 @@ def query_sp2b_q12c(graph):
       person:John_Q_Public rdf:type foaf:Person.
     }
     """)
+    benchable_graph.close()
 
 
 if __name__ == '__main__':
     # Check number of triples for each store before we do the benchs
     for ind_graph in xrange(MAX_GRAPH):
-        for b in BACKENDS:
-            graph_id = 'http://localhost/bench/{store}/{bench}/{ind}'.format(store=BACKENDS[b]['id_sub'],
+        for b in CHECK_BACKENDS:
+            graph_id = 'http://localhost/bench/{store}/{bench}/{ind}'.format(store=CHECK_BACKENDS[b]['id_sub'],
                                                                              bench=BENCH_NAME,
                                                                              ind=ind_graph)
-            g = rdflib.Graph(BACKENDS[b]['store'], identifier=graph_id)
-            g.open(BACKENDS[b]['open'], create=False)
+            g = rdflib.Graph(CHECK_BACKENDS[b]['store'], identifier=graph_id)
+            g.open(CHECK_BACKENDS[b]['open'], create=False)
             assert MIN_TRIPLES < len(g) < MAX_TRIPLES
-            print('backend %s checked for graph %s' % (b, 1))
+            print('store {store} checked for graph {ind_graph}'.format(store=b, ind_graph=1))
             g.close()
 
     # Run the benchs
     for ind_run in xrange(N_RUN):
-        bmgr.run('/tmp/lala.csv', show_log_info=True)
+        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_32000_fork_impact/'
+        save_file = save_dir + 'res_q32k_{n_forks}fork_{i}.csv'.format(n_forks=N_FORKS, i=ind_run)
+        bmgr.run(save_file, show_log_info=True)
