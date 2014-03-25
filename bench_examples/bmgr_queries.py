@@ -1,5 +1,4 @@
 from random import randint
-from sutils.decfork import fork
 
 from ktbs_bench.bench_manager import BenchManager
 import sparqlstore
@@ -18,16 +17,15 @@ PG = {'store': 'SQLAlchemy',
 
 SLEEPY = {'store': 'Sleepycat',
           'id_sub': 'sleepy',
-          'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_graph_32k'}
+          'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_triples_1m_triples'}
 
-CHECK_BACKENDS = {'sleepy': SLEEPY, 'virtuoso': VIRT}
+CHECK_BACKENDS = {'sleepy': SLEEPY}
 
-N_FORKS = 20
-N_RUN = 20
+N_RUN = 10
 MAX_GRAPH = 1
-MIN_TRIPLES = 32000
-MAX_TRIPLES = 33000
-BENCH_NAME = 'many_graph_32k'
+MIN_TRIPLES = 1024000
+MAX_TRIPLES = 1024200
+BENCH_NAME = '1m_triples'
 bmgr = BenchManager()
 
 
@@ -70,8 +68,7 @@ def postgres():
 @bmgr.context
 def sleepycat():
     graph_prefix = 'http://localhost/bench/sleepy/%s/' % BENCH_NAME
-    bs_sleepycat = nosparqlstore.get_sleepycat(SLEEPY['open'],
-                                               get_rand_graph(graph_prefix, MAX_GRAPH))
+    bs_sleepycat = nosparqlstore.get_sleepycat(SLEEPY['open'], graph_prefix)
     try:
         yield bs_sleepycat
     finally:
@@ -80,7 +77,6 @@ def sleepycat():
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_all(benchable_graph):
     benchable_graph.connect()
     benchable_graph.graph.query('select * where {?s ?p ?o}')
@@ -88,7 +84,6 @@ def query_all(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q1(benchable_graph):
     """Return the year of publication of "Journal 1 (1940)".
 
@@ -116,7 +111,6 @@ def query_sp2b_q1(benchable_graph):
 
 
 # @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q2(benchable_graph):
     """
     This query implements a bushy graph pattern. It contains
@@ -158,7 +152,6 @@ def query_sp2b_q2(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q3a(benchable_graph):
     """Select all articles with property swrc:pages
 
@@ -188,7 +181,6 @@ def query_sp2b_q3a(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q3b(benchable_graph):
     """Select all articles with property swrc:month"""
     benchable_graph.connect()
@@ -207,7 +199,6 @@ def query_sp2b_q3b(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q3c(benchable_graph):
     """Select all articles with property swrc:isbn."""
     benchable_graph.connect()
@@ -226,7 +217,6 @@ def query_sp2b_q3c(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q4(benchable_graph):
     """
     Select all distinct pairs of article author names for authors
@@ -268,7 +258,6 @@ def query_sp2b_q4(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q5a(benchable_graph):
     """Return the names of all persons that occur as author of at least one inproceeding
     and at least one article."""
@@ -294,7 +283,6 @@ def query_sp2b_q5a(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q5b(benchable_graph):
     """Return the names of all persons that occur as author of at least one inproceeding
     and at least one article (same as Q5a)."""
@@ -318,7 +306,6 @@ def query_sp2b_q5b(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q6(benchable_graph):
     """Return, for each year, the set of all publications authored by persons
     that have not published in years before."""
@@ -350,7 +337,6 @@ def query_sp2b_q6(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q7(benchable_graph):
     """Return the titles of all papers that have been cited at least once,
     but not by any paper that has not been cited itself."""
@@ -387,7 +373,6 @@ def query_sp2b_q7(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q8(benchable_graph):
     """Compute authors that have published with Paul Erdoes,
     or with an author that has published with Paul Erdoes."""
@@ -424,7 +409,6 @@ def query_sp2b_q8(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q9(benchable_graph):
     """Return incoming and outgoing properties of persons.
 
@@ -466,7 +450,6 @@ def query_sp2b_q9(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q10(benchable_graph):
     """Return all subjects that stand in any relation to Paul Erdoes.
     In our scenario,the query might also be formulated as
@@ -484,7 +467,6 @@ def query_sp2b_q10(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q11(benchable_graph):
     """Return (up to) 10 electronic edition URLs starting from the 51th publication, in lexicographical order."""
     benchable_graph.connect()
@@ -503,7 +485,6 @@ def query_sp2b_q11(benchable_graph):
 
 
 # @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q12a(benchable_graph):
     """Return yes if a person occurs as author of at least one inproceeding and article, no otherwise.
     This query is the boolean counterpart of Q5a."""
@@ -528,7 +509,6 @@ def query_sp2b_q12a(benchable_graph):
 
 
 # @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q12b(benchable_graph):
     """Return yes if an author has published with Paul Erdoes or with an author that has published with Paul Erdoes,
     and no otherwise. This query is the boolean counterpart of Q8. """
@@ -564,7 +544,6 @@ def query_sp2b_q12b(benchable_graph):
 
 
 @bmgr.bench
-@fork(n=N_FORKS)
 def query_sp2b_q12c(benchable_graph):
     """Check if the person John Q Public exists in the database."""
     benchable_graph.connect()
@@ -584,9 +563,8 @@ if __name__ == '__main__':
     # Check number of triples for each store before we do the benchs
     for ind_graph in xrange(MAX_GRAPH):
         for b in CHECK_BACKENDS:
-            graph_id = 'http://localhost/bench/{store}/{bench}/{ind}'.format(store=CHECK_BACKENDS[b]['id_sub'],
-                                                                             bench=BENCH_NAME,
-                                                                             ind=ind_graph)
+            graph_id = 'http://localhost/bench/{store}/{bench}/'.format(store=CHECK_BACKENDS[b]['id_sub'],
+                                                                        bench=BENCH_NAME)
             g = rdflib.Graph(CHECK_BACKENDS[b]['store'], identifier=graph_id)
             g.open(CHECK_BACKENDS[b]['open'], create=False)
             assert MIN_TRIPLES < len(g) < MAX_TRIPLES
@@ -595,6 +573,6 @@ if __name__ == '__main__':
 
     # Run the benchs
     for ind_run in xrange(N_RUN):
-        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_32000_fork_impact/'
-        save_file = save_dir + 'res_q32k_{n_forks}fork_{i}.csv'.format(n_forks=N_FORKS, i=ind_run)
+        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_1m_triples/'
+        save_file = save_dir + 'res_q1m_{i}.csv'.format(i=ind_run)
         bmgr.run(save_file, show_log_info=True)
