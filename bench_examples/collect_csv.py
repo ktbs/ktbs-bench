@@ -100,8 +100,7 @@ def display_figure(data):
     labels_done = False
     for ind_subplot, store_name in enumerate(data):
         ax = plt.subplot(1, n_subplots, ind_subplot)
-        ax.set_xlim(min(dirs.keys()) - 1, max(dirs.keys()) + 1)
-        ax.set_yscale('log')
+        # ax.set_yscale('log')
         plt.grid(True)
         df = data[store_name]
         df = df.reindex_axis(sorted(df.index), axis=0)  # sort the index (ie. nthings)
@@ -122,13 +121,22 @@ def display_figure(data):
 
 if __name__ == '__main__':
     dirs_graph = {1: '../bench_results/raw/selected_1graph/',
-                  5: '../bench_results/raw/selected_5graph/',
+                  # 5: '../bench_results/raw/selected_5graph/',
                   10: '../bench_results/raw/selected_10graph/',
-                  50: '../bench_results/raw/selected_50graph/', }
+                  50: '../bench_results/raw/selected_50graph/'}
 
-    dirs_triples = {32000: '../bench_results/raw/many_graph_32000/',
-                    256000: '../bench_results/raw/many_graph_256000/',
-                    1000000: '../bench_results/raw/many_graph_1M/'}
+    dirs_triples = {0.5: '../bench_results/raw/one_graph_500_triples/',
+                    1: '../bench_results/raw/one_graph_1k_triples/',
+                    2: '../bench_results/raw/one_graph_2k_triples/',
+                    4: '../bench_results/raw/one_graph_4k_triples/',
+                    8: '../bench_results/raw/one_graph_8k_triples/',
+                    16: '../bench_results/raw/one_graph_16k_triples/',
+                    32: '../bench_results/raw/one_graph_32k_triples/',
+                    64: '../bench_results/raw/one_graph_64k_triples/',
+                    128: '../bench_results/raw/one_graph_128k_triples/',
+                    256: '../bench_results/raw/one_graph_256k_triples/',
+                    512: '../bench_results/raw/one_graph_512k_triples/',
+                    1024: '../bench_results/raw/one_graph_1m_triples/'}
 
     dirs = dirs_triples
     means = get_means(dirs, write_csv=False)
