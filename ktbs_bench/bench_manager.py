@@ -52,13 +52,22 @@ class BenchManager(object):
     :ivar list _contexts: contexts to apply
     :ivar list _bench_funcs: functions to benchmark
     :ivar dict _results: collected benchmark results
-    :ivar _logger: logger
+    :ivar _logger: global logger
     """
-    def __init__(self):
+
+    def __init__(self, set_log_info=False):
+        """
+        :param bool set_log_info: True to set logger to info level, False otherwise.
+        """
         self._contexts = []
         self._bench_funcs = []
         self._results = {}
         self._logger = logging.getLogger(__name__)
+        if set_log_info:
+            self._logger.setLevel(logging.INFO)
+
+    def get_logger(self):
+        return self._logger
 
     def bench(self, func):
         """Prepare a function to be benched and add it to the list to be run later.
@@ -76,15 +85,11 @@ class BenchManager(object):
         func = contextmanager(func)
         self._contexts.append(func)
 
-    def run(self, output_filename, show_log_info=False):
+    def run(self, output_filename):
         """Benchmark functions against contexts.
 
         :param str output_filename: filename of the CSV output
-        :param bool show_log_info: True to display log during the run, False otherwise
         """
-        if show_log_info:
-            self._logger.setLevel(logging.INFO)
-
         # Run the bench for each function against each context
         for func in self._bench_funcs:
             self._results[func.__name__] = {}

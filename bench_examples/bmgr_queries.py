@@ -1,9 +1,10 @@
 from random import randint
 
+import rdflib
+
 from ktbs_bench.bench_manager import BenchManager
 import sparqlstore
 import nosparqlstore
-import rdflib
 
 
 rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
@@ -26,7 +27,7 @@ MAX_GRAPH = 1
 MIN_TRIPLES = 1024000
 MAX_TRIPLES = 1024200
 BENCH_NAME = '1m_triples'
-bmgr = BenchManager()
+bmgr = BenchManager(set_log_info=True)
 
 
 def get_rand_graph(graph_prefix, max_graph):
@@ -561,6 +562,7 @@ def query_sp2b_q12c(benchable_graph):
 
 if __name__ == '__main__':
     # Check number of triples for each store before we do the benchs
+    bmgr_logger = bmgr.get_logger()
     for ind_graph in xrange(MAX_GRAPH):
         for b in CHECK_BACKENDS:
             graph_id = 'http://localhost/bench/{store}/{bench}/'.format(store=CHECK_BACKENDS[b]['id_sub'],
@@ -568,11 +570,13 @@ if __name__ == '__main__':
             g = rdflib.Graph(CHECK_BACKENDS[b]['store'], identifier=graph_id)
             g.open(CHECK_BACKENDS[b]['open'], create=False)
             assert MIN_TRIPLES < len(g) < MAX_TRIPLES
-            print('store {store} checked for graph {ind_graph}'.format(store=b, ind_graph=1))
+            bmgr_logger.info('store {store} checked for graph {ind_graph}:{graph_id}'.format(store=b,
+                                                                                             ind_graph=1,
+                                                                                             graph_id=graph_id))
             g.close()
 
     # Run the benchs
     for ind_run in xrange(N_RUN):
         save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_1m_triples/'
         save_file = save_dir + 'res_q1m_{i}.csv'.format(i=ind_run)
-        bmgr.run(save_file, show_log_info=True)
+        bmgr.run(save_file)
