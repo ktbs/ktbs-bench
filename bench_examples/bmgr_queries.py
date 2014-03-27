@@ -47,11 +47,11 @@ def sleepycat():
     del bs_sleepycat
 
 
-@fork(n=1)
 @bmgr.bench
+@fork(n=3)
 def queries_cocktail(benchable_graph):
     benchable_graph.connect()
-    print("fork")
+    print('fork')
     for _ in xrange(50):
         benchable_graph.graph.query(queries.QUERIES['query_all'])
         benchable_graph.graph.query(queries.QUERIES['q1'])
@@ -74,6 +74,6 @@ def queries_cocktail(benchable_graph):
 if __name__ == '__main__':
     # Run the benchs
     for ind_run in xrange(N_RUN):
-        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_1m_triples_1fork/'
+        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_1m_triples_3forks/'
         save_file = save_dir + 'res_q1m_{i}.csv'.format(i=ind_run)
-        bmgr.run('/tmp/lala')
+        bmgr.run(save_file)
