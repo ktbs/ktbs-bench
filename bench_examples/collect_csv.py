@@ -1,9 +1,9 @@
 import logging
-
 from os import listdir, path
+
 import pandas as pd
 from matplotlib import pyplot as plt
-from numpy import linspace
+import numpy as np
 
 
 def get_files(directory, file_extension):
@@ -95,7 +95,7 @@ def display_figure(data):
     lines, labels = [], []
     colormap = plt.get_cmap('Set1')
     queries = data.values()[0].columns
-    color_list = [colormap(i) for i in linspace(0, 1, len(queries))]
+    color_list = [colormap(i) for i in np.linspace(0, 1, len(queries))]
     plt.rc('axes', color_cycle=color_list)
     labels_done = False
     for ind_subplot, store_name in enumerate(data):
@@ -138,7 +138,43 @@ if __name__ == '__main__':
                     512: '../bench_results/raw/one_graph_512k_triples/',
                     1024: '../bench_results/raw/one_graph_1m_triples/'}
 
-    dirs = dirs_triples
-    means = get_means(dirs, write_csv=False)
-    all_store_query = transform_df(means)
-    display_figure(all_store_query)
+    dirs_forks = {0: '../bench_results/raw/one_graph_1m_triples_nofork/',
+                  1: '../bench_results/raw/one_graph_1m_triples_1fork/',
+                  2: '../bench_results/raw/one_graph_1m_triples_2forks/',
+                  3: '../bench_results/raw/one_graph_1m_triples_3forks/',
+                  4: '../bench_results/raw/one_graph_1m_triples_4forks/',
+                  5: '../bench_results/raw/one_graph_1m_triples_5forks/',
+                  6: '../bench_results/raw/one_graph_1m_triples_6forks/',
+                  7: '../bench_results/raw/one_graph_1m_triples_7forks/',
+                  8: '../bench_results/raw/one_graph_1m_triples_8forks/',
+                  10: '../bench_results/raw/one_graph_1m_triples_10forks/',
+                  16: '../bench_results/raw/one_graph_1m_triples_16forks/',
+                  20: '../bench_results/raw/one_graph_1m_triples_20forks/'}
+
+    dirs_seqs = {1: '../bench_results/raw/one_graph_1m_triples_1seq/',
+                 2: '../bench_results/raw/one_graph_1m_triples_2seqs/',
+                 5: '../bench_results/raw/one_graph_1m_triples_5seqs/',
+                 10: '../bench_results/raw/one_graph_1m_triples_10seqs/',
+                 20: '../bench_results/raw/one_graph_1m_triples_20seqs/'}
+
+    means_forks = get_means(dirs_forks, write_csv=False)
+    all_store_query_forks = transform_df(means_forks)
+    x_forks = np.array(all_store_query_forks['sleepycat'].index.tolist())
+    y_forks = np.array(all_store_query_forks['sleepycat'].values.tolist())
+    ord_forks = x_forks.argsort()
+
+    means_seqs = get_means(dirs_seqs, write_csv=False)
+    all_store_query_seqs = transform_df(means_seqs)
+    x_seqs = np.array(all_store_query_seqs['sleepycat'].index.tolist())
+    y_seqs = np.array(all_store_query_seqs['sleepycat'].values.tolist())
+    ord_seqs = x_seqs.argsort()
+
+    # display Sleepycat forks vs. seqs
+    plt.figure()
+    plt.plot(x_seqs[ord_seqs], y_seqs[ord_seqs], 'b', marker='o', label='sequential')
+    plt.plot(x_forks[ord_forks], y_forks[ord_forks], 'g', marker='o', label='fork')
+    plt.xlabel('number of queries')
+    plt.ylabel('time (s)')
+    plt.legend(loc='upper left')
+    plt.grid()
+    plt.show()
