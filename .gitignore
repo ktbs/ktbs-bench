@@ -12,3 +12,7 @@ share
 
 # Notes
 notes/output
+
+# Heavy data
+data/*.n3
+data/*.rdf
