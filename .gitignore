@@ -9,3 +9,6 @@ share
 
 # Python
 *.pyc
+
+# Notes
+notes/output
