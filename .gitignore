@@ -1,0 +1,11 @@
+# Virtualenv
+bin
+lib
+include
+share
+
+# Pycharm
+.idea
+
+# Python
+*.pyc
