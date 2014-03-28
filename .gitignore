@@ -16,3 +16,6 @@ notes/output
 # Heavy data
 data/*.n3
 data/*.rdf
+
+# IPython
+.ipynb_checkpoints
