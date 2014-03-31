@@ -1,10 +1,10 @@
 import rdflib
-from sutils import fork
 
 from ktbs_bench.bench_manager import BenchManager
 import nosparqlstore
 import queries
 
+from random import randint
 
 bmgr = BenchManager(set_log_info=True)
 
@@ -17,19 +17,19 @@ PG = {'store': 'SQLAlchemy',
       'open': 'postgresql+psycopg2://localhost/many_graph'}
 SLEEPY = {'store': 'Sleepycat',
           'id_sub': 'sleepy',
-          'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_triples_1m_triples'}
+          'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_graph_32k'}
 
-CHECK_BACKENDS = {'sleepy': SLEEPY}
 N_RUN = 10
-MIN_TRIPLES = 1024000
-MAX_TRIPLES = 1024200
-BENCH_NAME = '1m_triples'
+MIN_TRIPLES = 30000
+MAX_TRIPLES = 35000
+
+N_GRAPH = 400
 
 
 @bmgr.context
 def sleepycat():
-    graph_prefix = 'http://localhost/bench/sleepy/%s/' % BENCH_NAME
-    bs_sleepycat = nosparqlstore.get_sleepycat(SLEEPY['open'], graph_prefix)
+    graph_id = 'http://localhost/bench/sleepy/many_graph_32k_%s/' % randint(0, N_GRAPH - 1)
+    bs_sleepycat = nosparqlstore.get_sleepycat(SLEEPY['open'], graph_id, False)
     try:
         # Checking number of triples in graph
         bs_sleepycat.connect()
@@ -42,7 +42,7 @@ def sleepycat():
                                                                                 n=n_triples,
                                                                                 max=MAX_TRIPLES))
         bs_sleepycat.connect()
-        yield bs_sleepycat
+        yield bs_sleepycat.graph
     finally:
         bs_sleepycat.close()
     del bs_sleepycat
@@ -73,62 +73,77 @@ def sleepycat():
 #     benchable_graph.close()
 
 
+@bmgr.bench
 def qall(graph):
     graph.query(queries.QUERIES['query_all'])
 
 
+@bmgr.bench
 def q1(graph):
     graph.query(queries.QUERIES['q1'])
 
 
+@bmgr.bench
 def q3a(graph):
     graph.query(queries.QUERIES['q3a'])
 
 
+@bmgr.bench
 def q3b(graph):
     graph.query(queries.QUERIES['q3b'])
 
 
+@bmgr.bench
 def q3c(graph):
     graph.query(queries.QUERIES['q3c'])
 
 
+@bmgr.bench
 def q4(graph):
     graph.query(queries.QUERIES['q4'])
 
 
+@bmgr.bench
 def q5a(graph):
     graph.query(queries.QUERIES['q5a'])
 
 
+@bmgr.bench
 def q5b(graph):
     graph.query(queries.QUERIES['q5b'])
 
 
+@bmgr.bench
 def q6(graph):
     graph.query(queries.QUERIES['q6'])
 
 
+@bmgr.bench
 def q7(graph):
     graph.query(queries.QUERIES['q7'])
 
 
+@bmgr.bench
 def q8(graph):
     graph.query(queries.QUERIES['q8'])
 
 
+@bmgr.bench
 def q9(graph):
     graph.query(queries.QUERIES['q9'])
 
 
+@bmgr.bench
 def q10(graph):
     graph.query(queries.QUERIES['q10'])
 
 
+@bmgr.bench
 def q11(graph):
     graph.query(queries.QUERIES['q11'])
 
 
+@bmgr.bench
 def q12c(graph):
     graph.query(queries.QUERIES['q12c'])
 
@@ -136,6 +151,6 @@ def q12c(graph):
 if __name__ == '__main__':
     # Run the benchs
     for ind_run in xrange(N_RUN):
-        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/one_graph_1m_triples_3forks/'
-        save_file = save_dir + 'res_q1m_{i}.csv'.format(i=ind_run)
+        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/many_graph_32k_%dgraphs/' % N_GRAPH
+        save_file = save_dir + 'res_many_graph_32k_{ngraph}graphs_{i}.csv'.format(ngraph=N_GRAPH, i=ind_run)
         bmgr.run(save_file)

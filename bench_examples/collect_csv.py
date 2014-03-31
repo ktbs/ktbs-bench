@@ -157,24 +157,42 @@ if __name__ == '__main__':
                  10: '../bench_results/raw/one_graph_1m_triples_10seqs/',
                  20: '../bench_results/raw/one_graph_1m_triples_20seqs/'}
 
-    means_forks = get_means(dirs_forks, write_csv=False)
-    all_store_query_forks = transform_df(means_forks)
-    x_forks = np.array(all_store_query_forks['sleepycat'].index.tolist())
-    y_forks = np.array(all_store_query_forks['sleepycat'].values.tolist())
-    ord_forks = x_forks.argsort()
+    dirs_sleepy_graph = {
+        100: '../bench_results/raw/many_graph_32k_100graphs/',
+        200: '../bench_results/raw/many_graph_32k_200graphs/',
+        300: '../bench_results/raw/many_graph_32k_300graphs/',
+        # 400: '../bench_results/raw/many_graph_32k_400graphs/',
+        # 500: '../bench_results/raw/many_graph_32k_500graphs/',
+        # 600: '../bench_results/raw/many_graph_32k_600graphs/',
+        # 700: '../bench_results/raw/many_graph_32k_700graphs/',
+        # 800: '../bench_results/raw/many_graph_32k_800graphs/',
+        # 900: '../bench_results/raw/many_graph_32k_900graphs/',
+        # 1000: '../bench_results/raw/many_graph_32k_1000graphs/',
+    }
 
-    means_seqs = get_means(dirs_seqs, write_csv=False)
-    all_store_query_seqs = transform_df(means_seqs)
-    x_seqs = np.array(all_store_query_seqs['sleepycat'].index.tolist())
-    y_seqs = np.array(all_store_query_seqs['sleepycat'].values.tolist())
-    ord_seqs = x_seqs.argsort()
+    means = get_means(dirs_sleepy_graph, write_csv=False)
+    ndf = transform_df(means)
+    display_figure(ndf)
 
-    # display Sleepycat forks vs. seqs
-    plt.figure()
-    plt.plot(x_seqs[ord_seqs], y_seqs[ord_seqs], 'b', marker='o', label='sequential')
-    plt.plot(x_forks[ord_forks], y_forks[ord_forks], 'g', marker='o', label='fork')
-    plt.xlabel('number of queries')
-    plt.ylabel('time (s)')
-    plt.legend(loc='upper left')
-    plt.grid()
-    plt.show()
+    # NOTES: plot for forks
+    # means_forks = get_means(dirs_forks, write_csv=False)
+    # all_store_query_forks = transform_df(means_forks)
+    # x_forks = np.array(all_store_query_forks['sleepycat'].index.tolist())
+    # y_forks = np.array(all_store_query_forks['sleepycat'].values.tolist())
+    # ord_forks = x_forks.argsort()
+    #
+    # means_seqs = get_means(dirs_seqs, write_csv=False)
+    # all_store_query_seqs = transform_df(means_seqs)
+    # x_seqs = np.array(all_store_query_seqs['sleepycat'].index.tolist())
+    # y_seqs = np.array(all_store_query_seqs['sleepycat'].values.tolist())
+    # ord_seqs = x_seqs.argsort()
+    #
+    # # display Sleepycat forks vs. seqs
+    # plt.figure()
+    # plt.plot(x_seqs[ord_seqs], y_seqs[ord_seqs], 'b', marker='o', label='sequential')
+    # plt.plot(x_forks[ord_forks], y_forks[ord_forks], 'g', marker='o', label='fork')
+    # plt.xlabel('number of queries')
+    # plt.ylabel('time (s)')
+    # plt.legend(loc='upper left')
+    # plt.grid()
+    # plt.show()
