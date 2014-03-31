@@ -41,34 +41,36 @@ def sleepycat():
                                                                                 min=MIN_TRIPLES,
                                                                                 n=n_triples,
                                                                                 max=MAX_TRIPLES))
+        bs_sleepycat.connect()
         yield bs_sleepycat
     finally:
-        pass
+        bs_sleepycat.close()
     del bs_sleepycat
 
 
-@bmgr.bench
-@fork(n=3)
-def queries_cocktail(benchable_graph):
-    benchable_graph.connect()
-    print('fork')
-    for _ in xrange(50):
-        benchable_graph.graph.query(queries.QUERIES['query_all'])
-        benchable_graph.graph.query(queries.QUERIES['q1'])
-        benchable_graph.graph.query(queries.QUERIES['q3a'])
-        benchable_graph.graph.query(queries.QUERIES['q3b'])
-        benchable_graph.graph.query(queries.QUERIES['q3c'])
-        benchable_graph.graph.query(queries.QUERIES['q4'])
-        benchable_graph.graph.query(queries.QUERIES['q5a'])
-        benchable_graph.graph.query(queries.QUERIES['q5b'])
-        benchable_graph.graph.query(queries.QUERIES['q6'])
-        benchable_graph.graph.query(queries.QUERIES['q7'])
-        benchable_graph.graph.query(queries.QUERIES['q8'])
-        benchable_graph.graph.query(queries.QUERIES['q9'])
-        benchable_graph.graph.query(queries.QUERIES['q10'])
-        benchable_graph.graph.query(queries.QUERIES['q11'])
-        benchable_graph.graph.query(queries.QUERIES['q12c'])
-    benchable_graph.close()
+# NOTES: not in use for benchmarking graph / store
+# @bmgr.bench
+# @fork(n=3)
+# def queries_cocktail(benchable_graph):
+#     benchable_graph.connect()
+#     print('fork')
+#     for _ in xrange(50):
+#         benchable_graph.graph.query(queries.QUERIES['query_all'])
+#         benchable_graph.graph.query(queries.QUERIES['q1'])
+#         benchable_graph.graph.query(queries.QUERIES['q3a'])
+#         benchable_graph.graph.query(queries.QUERIES['q3b'])
+#         benchable_graph.graph.query(queries.QUERIES['q3c'])
+#         benchable_graph.graph.query(queries.QUERIES['q4'])
+#         benchable_graph.graph.query(queries.QUERIES['q5a'])
+#         benchable_graph.graph.query(queries.QUERIES['q5b'])
+#         benchable_graph.graph.query(queries.QUERIES['q6'])
+#         benchable_graph.graph.query(queries.QUERIES['q7'])
+#         benchable_graph.graph.query(queries.QUERIES['q8'])
+#         benchable_graph.graph.query(queries.QUERIES['q9'])
+#         benchable_graph.graph.query(queries.QUERIES['q10'])
+#         benchable_graph.graph.query(queries.QUERIES['q11'])
+#         benchable_graph.graph.query(queries.QUERIES['q12c'])
+#     benchable_graph.close()
 
 
 def qall(graph):
