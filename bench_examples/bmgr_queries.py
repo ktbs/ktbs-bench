@@ -71,6 +71,66 @@ def queries_cocktail(benchable_graph):
     benchable_graph.close()
 
 
+def qall(graph):
+    graph.query(queries.QUERIES['query_all'])
+
+
+def q1(graph):
+    graph.query(queries.QUERIES['q1'])
+
+
+def q3a(graph):
+    graph.query(queries.QUERIES['q3a'])
+
+
+def q3b(graph):
+    graph.query(queries.QUERIES['q3b'])
+
+
+def q3c(graph):
+    graph.query(queries.QUERIES['q3c'])
+
+
+def q4(graph):
+    graph.query(queries.QUERIES['q4'])
+
+
+def q5a(graph):
+    graph.query(queries.QUERIES['q5a'])
+
+
+def q5b(graph):
+    graph.query(queries.QUERIES['q5b'])
+
+
+def q6(graph):
+    graph.query(queries.QUERIES['q6'])
+
+
+def q7(graph):
+    graph.query(queries.QUERIES['q7'])
+
+
+def q8(graph):
+    graph.query(queries.QUERIES['q8'])
+
+
+def q9(graph):
+    graph.query(queries.QUERIES['q9'])
+
+
+def q10(graph):
+    graph.query(queries.QUERIES['q10'])
+
+
+def q11(graph):
+    graph.query(queries.QUERIES['q11'])
+
+
+def q12c(graph):
+    graph.query(queries.QUERIES['q12c'])
+
+
 if __name__ == '__main__':
     # Run the benchs
     for ind_run in xrange(N_RUN):
