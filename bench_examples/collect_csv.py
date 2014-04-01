@@ -161,13 +161,11 @@ if __name__ == '__main__':
         100: '../bench_results/raw/many_graph_32k_100graphs/',
         200: '../bench_results/raw/many_graph_32k_200graphs/',
         300: '../bench_results/raw/many_graph_32k_300graphs/',
-        # 400: '../bench_results/raw/many_graph_32k_400graphs/',
-        # 500: '../bench_results/raw/many_graph_32k_500graphs/',
-        # 600: '../bench_results/raw/many_graph_32k_600graphs/',
-        # 700: '../bench_results/raw/many_graph_32k_700graphs/',
-        # 800: '../bench_results/raw/many_graph_32k_800graphs/',
-        # 900: '../bench_results/raw/many_graph_32k_900graphs/',
-        # 1000: '../bench_results/raw/many_graph_32k_1000graphs/',
+        400: '../bench_results/raw/many_graph_32k_400graphs/',
+        500: '../bench_results/raw/many_graph_32k_500graphs/',
+        600: '../bench_results/raw/many_graph_32k_600graphs/',
+        851: '../bench_results/raw/many_graph_32k_851graphs/',
+        1000: '../bench_results/raw/many_graph_32k_1000graphs/',
     }
 
     means = get_means(dirs_sleepy_graph, write_csv=False)

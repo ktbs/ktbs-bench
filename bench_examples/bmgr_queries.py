@@ -23,7 +23,7 @@ N_RUN = 10
 MIN_TRIPLES = 30000
 MAX_TRIPLES = 35000
 
-N_GRAPH = 400
+N_GRAPH = 1000
 
 
 @bmgr.context
@@ -34,7 +34,7 @@ def sleepycat():
         # Checking number of triples in graph
         bs_sleepycat.connect()
         n_triples = len(bs_sleepycat.graph)
-        assert MIN_TRIPLES < n_triples < MAX_TRIPLES
+        assert MIN_TRIPLES < n_triples < MAX_TRIPLES, "found %d triples, for graph %s" % (n_triples, graph_id)
         bs_sleepycat.close()
         bmgr.get_logger().info(
             'Sleepycat graph {graph_id} checked for {min} < {n} < {max}'.format(graph_id=bs_sleepycat.graph.identifier,
