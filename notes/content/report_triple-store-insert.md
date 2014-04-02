@@ -40,27 +40,79 @@ queries to benchmark the store that handles the graphs.
 Benchmarking triples insertion
 ==============================
 
+The first task we did was to benchmark different stores for the insertion of triples.
 
 
-data: bench_results/res_iter-insert.md
-triple-stores: postgres, postgres-sqlalchemy, sqlite, sqlite-sqlalchemy, virtuoso, jena, 4store
+What we have: stores and triples
+--------------------------------
 
-time measurement: different times : usr, sys, usr+sys, wall/real
-we end up choosing real because our goal is to know how much time a user will wait, beside usr and sys times don't seem
-to account for work doing by the triple-store.
+The stores we used are:
 
-discover rdflib-sqlalchemy bug addN() would not insert anything in the database : https://github.com/RDFLib/rdflib-sqlalchemy/pull/8
+- Sleepycat
+- [Virtuoso][virtuoso-home]
+- [Jena][jena-home]/Fuseki
+- [4store][4store-home]
+- PostgreSQL (with [rdflib-sqlalchemy][rdflib-sqlalchemy-github] and [rdflib-postgresql][rdflib-postgresql-github])
+- SQLite (with [rdflib-sqlalchemy][rdflib-sqlalchemy-github] and [rdflib-sqlite][rdflib-sqlite-github])
+- MySQL
 
-very slow bulk insertion with rdflib-sqlalchemy: https://github.com/RDFLib/rdflib-sqlalchemy/issues/9
-and https://github.com/RDFLib/rdflib/issues/357
+We used a set of approximetly 32 000 triples.
 
-future: insert time rises with store size ? (sleepycat)
 
+What we found
+-------------
+
+This was the first experiment I did with RDFLib and various stores.
+Therefore, it is prone to inaccuracy and I think that the tests should be re-run for accurate time measures.
+
+However, this experiment raised some interesting points and bugs.
+
+
+### Time measurement
+
+There are different time measures: *usr*, *sys*, *wall* (also called *real*).
+
+We ended up choosing *real* because our goal is to know how much time a user will wait.
+*usr* and *sys* times don't seem to account for work doing by the triple-store but only by the time spent in Python.
+
+
+### Bulk inserts are better than iterative inserts
+
+If a store supports it, use bulk insertion with `graph.addN()`. It is much faster.
+Another way of using `graph.addN()` is to parse a file in memory in tempory graph `mem`,
+then load this graph into the one you want: `graph += mem`. It will use `addN()`.
+
+
+### Bug in [rdflib-sqlachemy][rdflib-sqlalchemy-github]: `addN()` don't write anything
+
+Reported here: [https://github.com/RDFLib/rdflib-sqlalchemy/pull/8]()
+
+
+### Slow bulk insertion with [rdflib-sqlachemy][rdflib-sqlalchemy-github]
+
+There is no real bulk insertion with rdflib-sqlachemy, as it commits for each triple.
+Reported here: [https://github.com/RDFLib/rdflib-sqlalchemy/issues/9]()
+and [https://github.com/RDFLib/rdflib/issues/357]()
+
+
+### Cannot insert blank nodes in sparqlstores
+
+Fix provided by [@pchampin](https://github.com/pchampin) as an alternative SPARQLStore: [bnsparqlstore](../../ktbs_bench/bnsparqlstore.py).
+It converts blank nodes to special URIs.
+
+
+### Insert time rises with respect to store size?
+
+Only a suspicion for Sleepycat, needs real testing.
 
 
 [rdflib-docs]: https://rdflib.readthedocs.org/en/latest/
 [rdflib-sqlalchemy-github]: https://github.com/RDFLib/rdflib-sqlalchemy
+[rdflib-postgresql-github]: https://github.com/RDFLib/rdflib-postgresql
+[rdflib-sqlite-github]: https://github.com/RDFLib/rdflib-sqlite
 [virtuoso-home]: http://virtuoso.openlinksw.com/dataspace/doc/dav/wiki/Main/
+[jena-home]: https://jena.apache.org/
+[4store-home]: http://4store.org/
 
 [sp2bench]: http://dbis.informatik.uni-freiburg.de/forschung/projekte/SP2B/
 [bsbm]: http://wifo5-03.informatik.uni-mannheim.de/bizer/berlinsparqlbenchmark/
