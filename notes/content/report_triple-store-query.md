@@ -55,8 +55,8 @@ We also discarded some triple stores, see [report_bench-selected-stores.md]().
 
 Results:
 
-- [f( number of triples in one graph ) = query time](../../bench_results/figure_ntriples_store_1.png)
-- [f( number of graphs in one store ) = query time](../../bench_results/figure_ngraph_store_1.png)
+- [f( number of triples in one graph ) = query time](../../bench_results/figure_ntriples_stores_1.png)
+- [f( number of graphs in one store ) = query time](../../bench_results/figure_ngraph_stores_1.png)
 
 
 third? meeting:
