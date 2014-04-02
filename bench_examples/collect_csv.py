@@ -113,6 +113,8 @@ def display_figure(data):
                 labels += df.columns.values.tolist()
         else:
             plt.scatter(df.index.values.tolist() * len(df.columns), df, c=color_list, s=75)
+        plt.xlabel("Number of graphs per store")
+        plt.ylabel("time per query (s)")
         plt.title(store_name)
     fig.legend(lines, labels, loc='upper right')
     print('displaying figure')
