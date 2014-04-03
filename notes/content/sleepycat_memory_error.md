@@ -21,5 +21,5 @@ Another error occured:
 
 > bsddb.db.DBRunRecoveryError: (-30973, 'DB_RUNRECOVERY: Fatal error, run database recovery -- PANIC: Invalid argument')
 
-## Soltuion
+## Solution
 Same as before, run `db_recover` in the sleepycat folder.
