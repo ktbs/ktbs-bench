@@ -26,7 +26,7 @@ Exploration
 We first explored the different stores against the queries.
 Each store had one graph of 500 triples.
 Queries ran anywhere from 5 ms to 5000 s depending on the store and the query.
-Results here: [query32000_full.ods](../../bench_results/query32000_full.ods).
+Results here: [query32000_full.ods][query32k-ods].
 
 It's a bar plot: each bar is query for a store (resulting in nb queries * nb store bars).
 The y-axis is the query time (real time).
@@ -54,8 +54,8 @@ We also discarded some triple stores, see [report_bench-selected-stores.md]().
 
 Results:
 
-- [f( number of graphs in one store ) = query time](../../bench_results/figure_ngraph_store_1.png)
-- [f( number of triples in one graph ) = query time](../../bench_results/figure_ntriples_stores_1.pdf)
+- [f( number of graphs in one store ) = query time][query-ngraph]
+- [f( number of triples in one graph ) = query time][query-ntriples]
 
 
 ### Comments on f( number of graphs in one store ) = query time
@@ -95,41 +95,78 @@ For Sleepycat, all queries were not done for 1m triples. I was unable to insert 
 Another try at this should be done.
 
 Queries for PostgreSQL are constant in times (except q2 and 12a).
-It seemes to be the same thing for Sleepycat, but we don't have points for 1m triples.
-Both PostgreSQL and Sleepycat queries (except q2 and q12a) are in the range 10-100 ms, which is accetable.
+It seems to be the same thing for Sleepycat, but we don't have points for 1m triples.
+Both PostgreSQL and Sleepycat queries (except q2 and q12a) are in the range 10-100 ms, which is acceptable.
 
-Allmost all Virtuoso queries are in the range 10-5000 ms. There are greater variation between queries than with PostgreSQL and Sleepycat.
+Almost all Virtuoso queries are in the range 10-5000 ms. There are greater variation between queries than with PostgreSQL and Sleepycat.
 Further more, we don't have a clear understanding of a how the queries behave.
-We see that most queries takes more time when runing on a 256k triples graph than on a 32k triples graph.
-But most queries takes approximetly the same time, or even less time, when performing on 1m triples than on 256k triples graph.
+We see that most queries takes more time when running on a 256k triples graph than on a 32k triples graph.
+But most queries takes approximately the same time, or even less time, when performing on 1m triples than on 256k triples graph.
 
-This tests should be run another time for more accurate and understanble results.
-Additionnal points should be measured (64k, 128k, 512k, 700k triples / store).
+This tests should be run another time for more accurate and understandable results.
+Additional points should be measured (64k, 128k, 512k, 700k triples / store).
 
 
 Discarding queries
 ------------------
-fourth:
 
-- cleanup some queries that took too much time
+In order for the benchmarks to take less time, we removed some queries that took a lot of time (q2, and q12a).
 
-
-fifth?:
-
-- forks (first time, open close outside of fork --> sleepycat error, cf other article)
-- goal: simulate multiple user using kTBS at the same time
+The queries left are: query all, q1, q3abc, q4, q5ab, q6, q7, q8, q9, q10, q11, q12c.
 
 
-sixth:
+Forking
+-------
 
-- forks w/ open-close inside each fork --> we are measuring the time taken by open/close and the time taken
-by the queries as open/close is ~ 1s and a query is ~ 0.01s.
+Our goal was to simulate multiple user using kTBS by doing queries at the same time.
+The benchmarks we did so far didn't test that.
+
+We decided to use [fork][fork-wikipedia] to make multiple parallel queries.
+
+We first tried to do a fork around `graph.query()` call, but this failed for Sleepycat as the `open()` call
+was done by the parent process only once (see info on error in the [sleepycat error report][report-sleepycat-error]).
+
+Therefore, we put the fork around `graph.open(); graph.query(); graph.close()` to make it work with Sleepycat.
+
+We benchmarked this against Sleepycat for this configuration.
+Each `open`/`query`/`close` query took around 1 s. But the open/close was taking the whole time (~ 1 s for `open`/`close` and 0.01 s per `query`).
+The benchmarks were not relevant, we were really benchmarking the `open`/`close` and not what we were interested in: the `query`.
+
+To overcome this problem, we put together a lot of queries inside an `open`/`close`. It looked like this cocktail:
+
+- fork starts
+    - store `open()`
+        - Doing 50 times this:
+            - query all, q1, q3abc, q4, q5ab, q6, q7, q8, q9, q10, q11, q12c
+    - store `close()`
+- fork stops
+
+Each fork took around 10 s (1 s for `open`/`close` and 9 s for the queries).
+This time we were really benchmarking the queries rather than the `open`/`close`.
 
 
-seventh:
+#### Result figure
 
-- forks w/ open-close and query cocktail
+The figure that compares parallel queries (forks) vs. sequential queries is [here][query-cocktail].
+
+On the x-axis is the number of queries in parallel (for forks, in green) and the number of sequential queries
+(in blue).
+On the y-axis is the time taken to run the *cocktail* of queries (see above).
+
+We see that for a number of queries greater than or equal to 2, it is more efficient to do parallel queries.
+There is a two-fold factor between sequential queries and parallel queries.
+
+Furthermore we see that there is only a tiny time difference between 1 fork and 2 forks,
+meaning that parallel queries really is best.
 
 
 
 [sp2bench-queries]: http://dbis.informatik.uni-freiburg.de/index.php?project=SP2B/queries.php
+[fork-wikipedia]: https://en.wikipedia.org/wiki/Fork_(system_call)
+
+[report-sleepycat-error]: sleepycat_memory_error.md
+
+[query32k-ods]: ../../bench_results/query32000_full.ods
+[query-ngraph]: ../../bench_results/figure_ngraph_store_1.png
+[query-ntriples]: ../../bench_results/figure_ntriples_stores_1.pdf
+[query-cocktail]: ../../bench_results/fig_fork_vs_seq_cocktail_queries_mpoints.pdf
