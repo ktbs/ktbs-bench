@@ -167,6 +167,6 @@ meaning that parallel queries really is best.
 [report-sleepycat-error]: sleepycat_memory_error.md
 
 [query32k-ods]: ../../bench_results/query32000_full.ods
-[query-ngraph]: ../../bench_results/figure_ngraph_store_1.png
-[query-ntriples]: ../../bench_results/figure_ntriples_stores_1.pdf
+[query-ngraph]: ../../bench_results/figure_ngraph_store_1.pdf
+[query-ntriples]: ../../bench_results/figure_ntriples_stores_1.png
 [query-cocktail]: ../../bench_results/fig_fork_vs_seq_cocktail_queries_mpoints.pdf
