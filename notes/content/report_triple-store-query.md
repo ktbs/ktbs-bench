@@ -54,13 +54,27 @@ We also discarded some triple stores, see [report_bench-selected-stores.md]().
 
 Results:
 
-- [f( number of triples in one graph ) = query time](../../bench_results/figure_ntriples_stores_1.pdf)
 - [f( number of graphs in one store ) = query time](../../bench_results/figure_ngraph_store_1.png)
+- [f( number of triples in one graph ) = query time](../../bench_results/figure_ntriples_stores_1.pdf)
 
 
-third? meeting:
+### Comments on f( number of graphs in one store ) = query time
 
-- cf feuille Analyse
+We observe that all measures for 5 graph / store are greater than the other ones.
+This lead us to dismiss these points.
+
+For *4store* there are only measures for 1 graph / store.
+When trying to insert triples for 5 graphs / store in 4store, the computer started to swap and never finished.
+A decision was made to stop testing this store.
+
+For *Sleepycat*, *Postgres* and *Virtuoso*, most of the query times seem to be constant with respect to
+the number of graph per store. Except for a few queries like q2 and q12a for Sleepycat and Postgres, and q2, q3b, q3c and q9 for Virtuoso.
+
+We observe a weird behavior of *Sleepycat* and *PostgreSQL* on query 12a.
+This query is the same query as q5a, except q12a is a `ASK` and q5a is a `SELECT`.
+It turns out that q12a takes longer than q5a.
+This only appears on stores directly managed by RDFlib, which lead us to think that it's a bug in how RDFlib
+handles some `ASL` queries.
 
 
 fourth:
