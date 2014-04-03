@@ -74,9 +74,41 @@ We observe a weird behavior of *Sleepycat* and *PostgreSQL* on query 12a.
 This query is the same query as q5a, except q12a is a `ASK` and q5a is a `SELECT`.
 It turns out that q12a takes longer than q5a.
 This only appears on stores directly managed by RDFlib, which lead us to think that it's a bug in how RDFlib
-handles some `ASL` queries.
+handles some `ASK` queries.
+
+q2 acces large strings (abstract of articles), which is a reason why it takes longer than the other queries.
 
 
+### Comments on f( number of triples in one graph ) = query time
+
+We tested the query times as function of the number of triples in one graph in the stores: Sleepycat, PostgreSQL and Virtuoso.
+
+The measures were:
+
+- 32000 triples
+- 256000 triples
+- 1000000 triples
+
+For PostgreSQL, queries 2 and 12a were not done for 1m triples, as it would have taken too much time.
+
+For Sleepycat, all queries were not done for 1m triples. I was unable to insert 1m triples in a Sleepycat store, running the insert for 1 day was not sufficient. Plus, the python process was at state *sleeping*.
+Another try at this should be done.
+
+Queries for PostgreSQL are constant in times (except q2 and 12a).
+It seemes to be the same thing for Sleepycat, but we don't have points for 1m triples.
+Both PostgreSQL and Sleepycat queries (except q2 and q12a) are in the range 10-100 ms, which is accetable.
+
+Allmost all Virtuoso queries are in the range 10-5000 ms. There are greater variation between queries than with PostgreSQL and Sleepycat.
+Further more, we don't have a clear understanding of a how the queries behave.
+We see that most queries takes more time when runing on a 256k triples graph than on a 32k triples graph.
+But most queries takes approximetly the same time, or even less time, when performing on 1m triples than on 256k triples graph.
+
+This tests should be run another time for more accurate and understanble results.
+Additionnal points should be measured (64k, 128k, 512k, 700k triples / store).
+
+
+Discarding queries
+------------------
 fourth:
 
 - cleanup some queries that took too much time
