@@ -1,5 +1,5 @@
 Title: Benchmarking triple-store query capabilities
-Date: 2014-03-28
+Date: 2014-04-03
 Category: report
 Tags: info, triple-store, benchmark
 Author: Vincent
