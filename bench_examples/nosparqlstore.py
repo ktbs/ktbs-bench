@@ -26,7 +26,7 @@ def get_postgres(db_name, graph_id):
     return postgres_store
 
 
-def get_sleepycat(db_path, graph_id):
+def get_sleepycat(db_path, graph_id, create_graph):
     sleepycat = bg.BenchableGraph(store='Sleepycat', graph_id=graph_id,
-                                  store_config=db_path, graph_create=True)
+                                  store_config=db_path, graph_create=create_graph)
     return sleepycat
