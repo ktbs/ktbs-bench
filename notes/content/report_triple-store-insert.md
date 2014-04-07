@@ -97,7 +97,7 @@ and [https://github.com/RDFLib/rdflib/issues/357]()
 
 ### Cannot insert blank nodes in sparqlstores
 
-Fix provided by [@pchampin](https://github.com/pchampin) as an alternative SPARQLStore: [bnsparqlstore](../../ktbs_bench/bnsparqlstore.py).
+Fix provided by [@pchampin](https://github.com/pchampin) as an alternative SPARQLStore: `bnsparqlstore.py`.
 It converts blank nodes to special URIs.
 
 

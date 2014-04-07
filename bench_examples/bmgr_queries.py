@@ -1,6 +1,6 @@
 import rdflib
 
-from ktbs_bench.bench_manager import BenchManager
+from ktbs_bench_manager import BenchManager
 import nosparqlstore
 import queries
 
@@ -8,13 +8,13 @@ import queries
 bmgr = BenchManager(set_log_info=True)
 
 
-N_RUN = 20
-N_TRIPLES = 500
-MIN_TRIPLES = 500
-MAX_TRIPLES = 700
+N_RUN = 10
+N_TRIPLES = 1024000
+MIN_TRIPLES = 1024000
+MAX_TRIPLES = 1024500
 
 
-rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
+rdflib.plugin.register('BN', rdflib.store.Store, 'rdflib.plugins.stores.bnsparqlstore', 'SPARQLUpdateStore')
 VIRT = {'store': 'BN',
         'id_sub': 'virtuoso',
         'open': ('http://localhost:8890/sparql/', 'http://localhost:8890/sparql/')}
