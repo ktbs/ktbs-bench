@@ -6,7 +6,8 @@ numpy
 matplotlib
 
 decorator
--e git+git@github.com:vincent-octo/sutils.git@9831a671db4e69f3ef5eb24e0c0ef780ca739ef3#egg=sutils
+-e git+git@github.com:vincent-octo/sutils.git@master#egg=sutils
+-e git+https://github.com/vincent-octo/ktbs_bench_manager.git@master#egg=ktbs_bench_manager
 
 pelican
 fabric
