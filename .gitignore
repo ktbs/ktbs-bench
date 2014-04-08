@@ -1,21 +1,25 @@
 # Virtualenv
-bin
-lib
-include
-share
+bin/
+lib/
+include/
+share/
+src/
 
 # Pycharm
-.idea
+.idea/
 
 # Python
 *.pyc
 
 # Notes
-notes/output
+notes/output/
 
 # Heavy data
 data/*.n3
 data/*.rdf
 
 # IPython
-.ipynb_checkpoints
+.ipynb_checkpoints/
+
+# temporary files
+*~
