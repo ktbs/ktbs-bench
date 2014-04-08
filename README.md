@@ -23,14 +23,22 @@ How to setup this project
 
   4. Install the necessary python packages: `pip install -r requirements.txt`.
 
+     If you want to run the examples, you will to install `pandas`, `matplotlib` and `numpy`.
+     These libraries have been excluded by default because they are heavy.
+     Either uncomment the corresponding lines in [`requirements.txt`](requirements.txt) or use
+     your package manager to install them.
 
-Notes
------
+
+Reading and writing notes
+-------------------------
+
+Extra dependencies must be installed to read notes using [Pelican][pelican-web]: `Pelican`, `fabric` and `Markdown`.
+You can install them with [pip](http://www.pip-installer.org/en/latest/): `pip install Pelican fabric Markdown`.
 
 ### How to read them
 Either in plain Mardown, by going in the directory `notes/content` and browsing the files.
 
-Or by launching [Pelican](http://blog.getpelican.com/):
+Or by launching [Pelican][pelican-web]:
 
 1. Make sure that you have the following python packages installed:
     - Pelican
@@ -48,3 +56,5 @@ Or create new files in `notes/content` (checkout existing files for formatting).
 License
 -------
 MIT, see [LICENSE](/LICENSE) file.
+
+[pelican-web]: http://blog.getpelican.com/
