@@ -36,7 +36,8 @@ def sleepycat():
         n_triples = len(bs_sleepycat.graph)
         assert MIN_TRIPLES < n_triples < MAX_TRIPLES, "found %d triples, for graph %s" % (n_triples, graph_id)
         bs_sleepycat.close()
-        bmgr.get_logger().info(
+        logger = bmgr.get_logger()
+        logger.info(
             'Sleepycat graph {graph_id} checked for {min} < {n} < {max}'.format(graph_id=bs_sleepycat.graph.identifier,
                                                                                 min=MIN_TRIPLES,
                                                                                 n=n_triples,
