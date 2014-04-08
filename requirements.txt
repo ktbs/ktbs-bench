@@ -12,3 +12,5 @@ decorator
 pelican
 fabric
 Markdown
+
+docopt
