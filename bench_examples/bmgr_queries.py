@@ -1,6 +1,6 @@
 import rdflib
 
-from ktbs_bench.bench_manager import BenchManager
+from ktbs_bench_manager import BenchManager
 import nosparqlstore
 import queries
 
@@ -8,13 +8,13 @@ import queries
 bmgr = BenchManager(set_log_info=True)
 
 
-N_RUN = 20
-N_TRIPLES = 500
-MIN_TRIPLES = 500
-MAX_TRIPLES = 700
+N_RUN = 10
+N_TRIPLES = 1024000
+MIN_TRIPLES = 1024000
+MAX_TRIPLES = 1024500
 
 
-rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
+rdflib.plugin.register('BN', rdflib.store.Store, 'rdflib.plugins.stores.bnsparqlstore', 'SPARQLUpdateStore')
 VIRT = {'store': 'BN',
         'id_sub': 'virtuoso',
         'open': ('http://localhost:8890/sparql/', 'http://localhost:8890/sparql/')}
@@ -36,7 +36,8 @@ def sleepycat():
         n_triples = len(bs_sleepycat.graph)
         assert MIN_TRIPLES < n_triples < MAX_TRIPLES, "found %d triples, for graph %s" % (n_triples, graph_id)
         bs_sleepycat.close()
-        bmgr.get_logger().info(
+        logger = bmgr.get_logger()
+        logger.info(
             'Sleepycat graph {graph_id} checked for {min} < {n} < {max}'.format(graph_id=bs_sleepycat.graph.identifier,
                                                                                 min=MIN_TRIPLES,
                                                                                 n=n_triples,

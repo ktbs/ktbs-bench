@@ -1,7 +1,7 @@
-from ktbs_bench.benchable_graph import BenchableGraph
+from ktbs_bench_manager import BenchableGraph
 import rdflib
 
-rdflib.plugin.register('BN', rdflib.store.Store, 'ktbs_bench.bnsparqlstore', 'SPARQLUpdateStore')
+rdflib.plugin.register('BN', rdflib.store.Store, 'rdflib.plugins.stores.bnsparqlstore', 'SPARQLUpdateStore')
 
 
 def get_sparqlstore(query_endpoint, update_endpoint, identifier="http://localhost/generic_sparqlstore/"):
