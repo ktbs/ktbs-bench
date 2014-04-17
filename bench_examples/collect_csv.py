@@ -114,6 +114,8 @@ def display_figure(data):
         else:
             plt.scatter(df.index.values.tolist() * len(df.columns), df, c=color_list, s=75)
         plt.title(store_name)
+        plt.xlabel("number of triples per store (k-triples)")
+        plt.ylabel("time (s)")
     fig.legend(lines, labels, loc='upper right')
     print('displaying figure')
     plt.show()
@@ -125,18 +127,19 @@ if __name__ == '__main__':
                   10: '../bench_results/raw/selected_10graph/',
                   50: '../bench_results/raw/selected_50graph/'}
 
-    dirs_triples = {0.5: '../bench_results/raw/one_graph_500_triples/',
-                    1: '../bench_results/raw/one_graph_1k_triples/',
-                    2: '../bench_results/raw/one_graph_2k_triples/',
-                    4: '../bench_results/raw/one_graph_4k_triples/',
-                    8: '../bench_results/raw/one_graph_8k_triples/',
-                    16: '../bench_results/raw/one_graph_16k_triples/',
-                    32: '../bench_results/raw/one_graph_32k_triples/',
-                    64: '../bench_results/raw/one_graph_64k_triples/',
-                    128: '../bench_results/raw/one_graph_128k_triples/',
-                    256: '../bench_results/raw/one_graph_256k_triples/',
-                    512: '../bench_results/raw/one_graph_512k_triples/',
-                    1024: '../bench_results/raw/one_graph_1m_triples/'}
+    dirs_triples = {0.5: '../bench_results/raw/many_triples_500/',
+                    1: '../bench_results/raw/many_triples_1000/',
+                    2: '../bench_results/raw/many_triples_2000/',
+                    4: '../bench_results/raw/many_triples_4000/',
+                    8: '../bench_results/raw/many_triples_8000/',
+                    16: '../bench_results/raw/many_triples_16000/',
+                    32: '../bench_results/raw/many_triples_32000/',
+                    64: '../bench_results/raw/many_triples_64000/',
+                    128: '../bench_results/raw/many_triples_128000/',
+                    256: '../bench_results/raw/many_triples_256000/',
+                    512: '../bench_results/raw/many_triples_512000/',
+                    1024: '../bench_results/raw/many_triples_1024000/',
+    }
 
     dirs_forks = {0: '../bench_results/raw/one_graph_1m_triples_nofork/',
                   1: '../bench_results/raw/one_graph_1m_triples_1fork/',
@@ -157,24 +160,4 @@ if __name__ == '__main__':
                  10: '../bench_results/raw/one_graph_1m_triples_10seqs/',
                  20: '../bench_results/raw/one_graph_1m_triples_20seqs/'}
 
-    means_forks = get_means(dirs_forks, write_csv=False)
-    all_store_query_forks = transform_df(means_forks)
-    x_forks = np.array(all_store_query_forks['sleepycat'].index.tolist())
-    y_forks = np.array(all_store_query_forks['sleepycat'].values.tolist())
-    ord_forks = x_forks.argsort()
-
-    means_seqs = get_means(dirs_seqs, write_csv=False)
-    all_store_query_seqs = transform_df(means_seqs)
-    x_seqs = np.array(all_store_query_seqs['sleepycat'].index.tolist())
-    y_seqs = np.array(all_store_query_seqs['sleepycat'].values.tolist())
-    ord_seqs = x_seqs.argsort()
-
-    # display Sleepycat forks vs. seqs
-    plt.figure()
-    plt.plot(x_seqs[ord_seqs], y_seqs[ord_seqs], 'b', marker='o', label='sequential')
-    plt.plot(x_forks[ord_forks], y_forks[ord_forks], 'g', marker='o', label='fork')
-    plt.xlabel('number of queries')
-    plt.ylabel('time (s)')
-    plt.legend(loc='upper left')
-    plt.grid()
-    plt.show()
+    display_figure(transform_df(get_means(dirs_triples, write_csv=False)))
