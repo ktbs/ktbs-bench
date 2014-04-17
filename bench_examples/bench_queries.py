@@ -127,6 +127,6 @@ def q12c(graph):
 if __name__ == '__main__':
     # Run the benchs
     for ind_run in xrange(N_RUN):
-        save_dir = '/home/vincent/projets/liris/ktbs_bench/bench_results/raw/many_triples_%s/' % N_TRIPLES
+        save_dir = '../bench_results/raw/many_triples_%s/' % N_TRIPLES
         save_file = save_dir + 'res_many_triples_{n}_{i}.csv'.format(n=N_TRIPLES, i=ind_run)
         bmgr.run(save_file)
