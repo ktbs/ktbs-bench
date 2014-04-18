@@ -1,6 +1,8 @@
 .. Discarding store in the benchmark
    Created: 2014-02-26
 
+.. _bench-selected-stores:
+
 Discarding store in the benchmark
 =================================
 

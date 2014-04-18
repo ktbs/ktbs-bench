@@ -1,6 +1,8 @@
 .. Benchmarking triple-store insert capabilities
    Created: 2014-03-28
 
+.. _report-bench-insert:
+
 Benchmarking insert into triple stores
 ======================================
 

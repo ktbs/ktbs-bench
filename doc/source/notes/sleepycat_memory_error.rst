@@ -1,5 +1,7 @@
 .. Created: 2014-03-04
 
+.. _sleepycat-memory-error:
+
 Sleepycat memory error
 ======================
 

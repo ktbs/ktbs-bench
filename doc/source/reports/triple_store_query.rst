@@ -7,8 +7,7 @@ Benchmarking query capabilities for triple-stores
 Context
 -------
 
-After some experiments with `triple
-insertion <report_triple-store-insert.md>`__, we decided to refocus on
+After some experiments with :ref:`report-bench-insert`, we decided to refocus on
 store queries because it is a widely used scenario for kTBS users.
 
 The goal is to explore the capabilities of several triple stores for
@@ -26,7 +25,8 @@ Exploration
 We first explored the different stores against the queries. Each store
 had one graph of 500 triples. Queries ran anywhere from 5 ms to 5000 s
 depending on the store and the query. Results here:
-`query32000\_full.ods <../../bench_results/query32000_full.ods>`__.
+`query32000\_full.ods <https://github.com/ktbs/ktbs-bench/blob/master/bench_results/query32000_full.ods>`__
+or in ``bench_results/query32000_full.ods``.
 
 It's a bar plot: each bar is query for a store (resulting in nb queries
 \* nb store bars). The y-axis is the query time (real time). Tested
@@ -50,15 +50,14 @@ We changed how we looked at results. We wanted to see the evolution of
 query times against the number of triples in one graph, or the number of
 graphs per store.
 
-We also discarded some triple stores, see
-`Bench selected stores <bench_selected_stores.rst>`__.
+We also discarded some triple stores, see :ref:`bench-selected-stores`.
 
 Results:
 
 -  `f( number of graphs in one store ) = query
-   time <../../bench_results/figure_ngraph_store_1.pdf>`__
+   time <https://github.com/ktbs/ktbs-bench/tree/master/bench_results/figure_ngraph_store_1.pdf>`__
 -  `f( number of triples in one graph ) = query
-   time <../../bench_results/figure_ntriples_stores_1.png>`__
+   time <https://github.com/ktbs/ktbs-bench/tree/master/bench_results/figure_ntriples_stores_1.png>`__
 
 Comments on f( number of graphs in one store ) = query time
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -142,8 +141,7 @@ multiple parallel queries.
 
 We first tried to do a fork around ``graph.query()`` call, but this
 failed for Sleepycat as the ``open()`` call was done by the parent
-process only once (see info on error in the `sleepycat error
-report <sleepycat_memory_error.md>`__).
+process only once (see info on error in the :ref:`sleepycat-memory-error`).
 
 Therefore, we put the fork around
 ``graph.open(); graph.query(); graph.close()`` to make it work with
@@ -181,7 +179,7 @@ Result figure
 
 The figure that compares parallel queries (forks) vs. sequential queries
 is
-`here <../../bench_results/fig_fork_vs_seq_cocktail_queries_mpoints.pdf>`__.
+`here <https://github.com/ktbs/ktbs-bench/tree/master/bench_results/fig_fork_vs_seq_cocktail_queries_mpoints.pdf>`__.
 
 On the x-axis is the number of queries in parallel (for forks, in green)
 and the number of sequential queries (in blue). On the y-axis is the
