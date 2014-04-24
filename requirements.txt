@@ -11,4 +11,4 @@ docopt
 pandas
 numpy
 matplotlib
-dateutil
+python-dateutil
