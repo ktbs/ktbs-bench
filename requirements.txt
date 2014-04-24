@@ -9,6 +9,7 @@ docopt
 
 # Comment the following lines if you don't want to install extra dependencies to run the examples
 python-dateutil
+six
 pandas
 numpy
 matplotlib
