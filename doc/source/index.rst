@@ -26,7 +26,6 @@ Development files:
 
 .. toctree::
    bench
-   collectcsv
 
 
 Indices and tables
