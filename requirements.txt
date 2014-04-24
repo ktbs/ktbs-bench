@@ -8,7 +8,7 @@ docopt
 -e git+https://github.com/vincent-octo/ktbs_bench_manager.git@master#egg=ktbs_bench_manager
 
 # Comment the following lines if you don't want to install extra dependencies to run the examples
+python-dateutil
 pandas
 numpy
 matplotlib
-python-dateutil
