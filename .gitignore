@@ -14,6 +14,9 @@ src/
 # Notes
 notes/output/
 
+# Doc
+doc/build/
+
 # Heavy data
 data/*.n3
 data/*.rdf
