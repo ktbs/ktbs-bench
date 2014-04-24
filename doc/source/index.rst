@@ -15,10 +15,23 @@ Contents:
    notes
 
 
+See also
+========
+
+The *foundation of these benchmarks*: `kTBS Bench Manager <https://ktbs-bench-manager.readthedocs.org/en/latest/>`_.
+
+Some useful decorators that we rely on: `sutils <https://sutils.readthedocs.org/en/latest/>`_.
+
+Development files:
+
+.. toctree::
+   bench
+   collectcsv
+
+
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
