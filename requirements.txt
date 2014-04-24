@@ -7,14 +7,7 @@ docopt
 -e git+git@github.com:vincent-octo/sutils.git@master#egg=sutils
 -e git+https://github.com/vincent-octo/ktbs_bench_manager.git@master#egg=ktbs_bench_manager
 
-# Uncomment the following lines if you want to be able to run the examples
-# pandas
-# numpy
-# matplotlib
-
-
-# Uncomment the following lines if you want to be able to read and write the notes as a blog
-# pelican
-# fabric
-# Markdown
-
+# Comment the following lines if you don't want to install extra dependencies to run the examples
+pandas
+numpy
+matplotlib
