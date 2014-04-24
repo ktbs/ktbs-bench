@@ -54,7 +54,7 @@ Use `bin/bench.py --help` for more information.
 
 Documentation
 -------------
-See the [documentation for this project][kbm-doc] is available on readthedocs.
+The [documentation for this project][kbm-doc] is available on readthedocs.
 The reports on our findings are there too.
 
 
