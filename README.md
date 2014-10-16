@@ -54,7 +54,7 @@ Use `bin/bench.py --help` for more information.
 
 Documentation
 -------------
-The [documentation for this project][kbm-doc] is available on readthedocs.
+The [documentation for this project][kb-doc] is available on readthedocs.
 The reports on our findings are there too.
 
 
@@ -66,4 +66,5 @@ MIT, see [LICENSE](/LICENSE) file.
 [pelican-web]: http://blog.getpelican.com/
 [report-query]: https://ktbs-bench.readthedocs.org/en/latest/reports/triple_store_query.html
 [report-insert]: https://ktbs-bench.readthedocs.org/en/latest/reports/triple_store_insert.html
+[kb-doc]: http://ktbs-bench.readthedocs.org/en/latest/
 [kbm-doc]: https://ktbs-bench-manager.readthedocs.org/en/latest/bench_manager.html
