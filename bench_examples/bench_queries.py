@@ -23,7 +23,7 @@ PG = {'store': 'SQLAlchemy',
       'open': 'postgresql+psycopg2://localhost/many_graph'}
 SLEEPY = {'store': 'Sleepycat',
           'id_sub': 'sleepy',
-          'open': '/home/vincent/projets/liris/ktbs_bench/sleepycat_many_triples_%s' % N_TRIPLES}
+          'open': 'PATH_TO_SLEEPYCAT_DB'}
 
 
 @bmgr.context
